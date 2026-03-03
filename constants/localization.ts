@@ -174,6 +174,19 @@ export const Localization = {
     editCancel: 'Anulează',
   },
 
+  // Activity feed
+  activity: {
+    title: 'Activitate recentă',
+    seeAll: 'Vezi tot',
+    empty: 'Nicio activitate recentă',
+    statusChange: 'Statusul a fost actualizat',
+    issueApproved: 'Problema a fost aprobată',
+    issueResolved: 'Problema a fost rezolvată',
+    issueCreated: 'Problemă nouă raportată',
+    newComment: 'Comentariu nou',
+    newSupporters: (count: number) => `${count} persoane au susținut`,
+  },
+
   // Email campaign
   email: {
     promptTitle: 'Ai trimis emailul?',

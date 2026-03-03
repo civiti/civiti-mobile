@@ -1,8 +1,9 @@
 import { ErrorBoundary, useRouter } from 'expo-router';
 import { useRef, useMemo, useState, useCallback } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ActivityItem } from '@/components/activity-item';
 import { EmptyState } from '@/components/empty-state';
 import { ErrorState } from '@/components/error-state';
 import { FilterSheet } from '@/components/filter-sheet';
@@ -14,8 +15,9 @@ import type { BottomSheetMethods } from '@/components/ui/bottom-sheet';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Localization } from '@/constants/localization';
-import { Spacing } from '@/constants/spacing';
+import { BorderRadius, Spacing } from '@/constants/spacing';
 import { BrandColors, Fonts } from '@/constants/theme';
+import { useRecentActivity } from '@/hooks/use-activity';
 import { useIssues } from '@/hooks/use-issues';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import type { IssueFilters, IssueListResponse } from '@/types/issues';
@@ -50,7 +52,7 @@ function ListHeader({
 
   return (
     <View style={styles.header}>
-      <ThemedText type="h1">{Localization.tabs.issues}</ThemedText>
+      <ThemedText type="h1" accessibilityRole="header">{Localization.tabs.issues}</ThemedText>
       <View style={styles.headerActions}>
         <View style={styles.segmentedControlWrapper}>
           <SegmentedControl
@@ -87,6 +89,84 @@ function ListHeader({
   );
 }
 
+// ─── ActivityStrip ──────────────────────────────────────────────
+
+type ActivityStripProps = {
+  viewMode: ViewMode;
+  onIssuePress: (id: string) => void;
+};
+
+function ActivityStrip({ viewMode, onIssuePress }: ActivityStripProps) {
+  const accent = useThemeColor({}, 'accent');
+  const surface = useThemeColor({}, 'surface');
+  const border = useThemeColor({}, 'border');
+
+  const {
+    activities,
+    isLoading,
+    isError,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useRecentActivity();
+
+  // Hide when empty after loading (error or no data — don't block issues for activity failure)
+  if (isError || (!isLoading && activities.length === 0)) return null;
+
+  return (
+    <View style={{ display: viewMode === 'map' ? 'none' : 'flex' }}>
+      {/* Section title row */}
+      <View style={styles.stripHeader}>
+        <ThemedText type="h3" accessibilityRole="header">
+          {Localization.activity.title}
+        </ThemedText>
+        {hasNextPage && (
+          <Pressable
+            onPress={fetchNextPage}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={Localization.activity.seeAll}
+          >
+            <ThemedText type="caption" style={{ color: accent }}>
+              {Localization.activity.seeAll}
+            </ThemedText>
+          </Pressable>
+        )}
+      </View>
+
+      {/* Horizontal scroll */}
+      {isLoading ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.stripContent}
+        >
+          <View style={[styles.skeletonCard, { borderColor: border, backgroundColor: surface }]} />
+          <View style={[styles.skeletonCard, { borderColor: border, backgroundColor: surface }]} />
+        </ScrollView>
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.stripContent}
+        >
+          {activities.map((item) => (
+            <ActivityItem key={item.id} activity={item} onPress={onIssuePress} />
+          ))}
+          {isFetchingNextPage && (
+            <ActivityIndicator style={styles.stripLoader} color={accent} />
+          )}
+        </ScrollView>
+      )}
+    </View>
+  );
+}
+
+// Expose refetch for pull-to-refresh — lifted to screen level
+// (ActivityStrip calls useRecentActivity internally, but we also need
+//  its refetch in the parent RefreshControl. We solve this by calling
+//  useRecentActivity in the parent too — React Query deduplicates.)
+
 // ─── Helpers ────────────────────────────────────────────────────
 
 const keyExtractor = (item: IssueListResponse) => item.id;
@@ -112,6 +192,15 @@ export default function IssuesScreen() {
     isRefetching,
     refetch,
   } = useIssues(filters);
+
+  // Activity feed — also called inside ActivityStrip, but React Query
+  // deduplicates the same queryKey so there's no double fetch.
+  const { refetch: activityRefetch } = useRecentActivity();
+
+  const handleRefresh = useCallback(() => {
+    void refetch();
+    activityRefetch();
+  }, [refetch, activityRefetch]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -151,7 +240,7 @@ export default function IssuesScreen() {
   );
 
   const handleEndReached = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+    if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // ─── Content branching ──────────────────────────────────────
@@ -186,6 +275,7 @@ export default function IssuesScreen() {
     <>
       <SafeAreaView style={[styles.container, { backgroundColor: background }]} edges={['top']}>
         {header}
+        <ActivityStrip viewMode={viewMode} onIssuePress={handlePress} />
         {showOverlay && overlay}
         {hasData && (
           <View style={[styles.container, { display: viewMode === 'map' ? 'flex' : 'none' }]}>
@@ -201,7 +291,7 @@ export default function IssuesScreen() {
             onEndReached={handleEndReached}
             onEndReachedThreshold={0.5}
             refreshControl={
-              <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={accent} />
+              <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} tintColor={accent} />
             }
             contentContainerStyle={styles.listContent}
           />
@@ -259,5 +349,28 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: Spacing['3xl'],
+  },
+  stripHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.sm,
+  },
+  stripContent: {
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.sm,
+    paddingBottom: Spacing.lg,
+  },
+  skeletonCard: {
+    width: 260,
+    height: 72,
+    borderRadius: BorderRadius.sm,
+    borderCurve: 'continuous',
+    borderWidth: 1,
+    opacity: 0.4,
+  },
+  stripLoader: {
+    paddingHorizontal: Spacing.lg,
   },
 });
