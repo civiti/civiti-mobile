@@ -52,6 +52,11 @@ export default function RootLayout() {
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="issues/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="badges" options={{ headerShown: false }} />
+              <Stack.Screen name="achievements" options={{ headerShown: false }} />
+              <Stack.Screen name="leaderboard" options={{ headerShown: false }} />
+              <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
+              <Stack.Screen name="settings" options={{ headerShown: false }} />
               <Stack.Screen name="(auth)" options={{ presentation: 'modal', headerShown: false }} />
             </Stack>
             <StatusBar style="auto" />

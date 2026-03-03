@@ -39,6 +39,10 @@ export function Avatar({ uri, name, size = 40 }: AvatarProps) {
       <Image
         source={{ uri }}
         style={[styles.image, containerStyle]}
+        contentFit="cover"
+        transition={200}
+        recyclingKey={uri}
+        accessibilityRole="image"
         accessibilityLabel={name ?? 'Avatar'}
       />
     );

@@ -434,6 +434,71 @@ export const Localization = {
     gamificationUnavailable: 'Statisticile nu sunt disponibile momentan',
   },
 
+  // Badges screen
+  badges: {
+    title: 'Insigne',
+    earnedSection: 'Obținute',
+    lockedSection: 'Blocate',
+    empty: 'Nu ai obținut încă nicio insignă',
+  },
+
+  // Achievements screen
+  achievements: {
+    title: 'Realizări',
+    inProgress: 'În progres',
+    completed: 'Completate',
+    rewardPoints: (n: number) => `+${n} puncte`,
+    emptyInProgress: 'Nu ai realizări în progres',
+    emptyCompleted: 'Nu ai realizări completate',
+  },
+
+  // Leaderboard screen
+  leaderboard: {
+    title: 'Clasament',
+    periodAllTime: 'Tot timpul',
+    periodMonthly: 'Lunar',
+    periodWeekly: 'Săptămânal',
+    categoryPoints: 'Puncte',
+    categoryIssues: 'Probleme',
+    categoryResolved: 'Rezolvate',
+    empty: 'Clasamentul nu este disponibil momentan',
+    points: (n: number) => `${n} pt`,
+    level: (n: number) => `Niv. ${n}`,
+  },
+
+  // Edit profile screen
+  editProfile: {
+    title: 'Editează profilul',
+    displayNameLabel: 'Nume afișat',
+    countyLabel: 'Județ',
+    cityLabel: 'Oraș',
+    districtLabel: 'Sector',
+    districtPlaceholder: 'Alege sectorul',
+    residenceLabel: 'Tip locuință',
+    saveButton: 'Salvează modificările',
+    saving: 'Se salvează...',
+    saveSuccess: 'Profilul a fost actualizat',
+    saveFailed: 'Actualizarea profilului a eșuat. Încearcă din nou.',
+    displayNameRequired: 'Numele afișat este obligatoriu',
+  },
+
+  // Settings screen
+  settings: {
+    title: 'Setări',
+    notificationsSection: 'Notificări',
+    issueUpdates: 'Actualizări probleme',
+    communityNews: 'Știri comunitate',
+    monthlyDigest: 'Rezumat lunar',
+    achievementsNotif: 'Realizări',
+    dangerSection: 'Zona periculoasă',
+    deleteAccount: 'Șterge contul',
+    deleteConfirmTitle: 'Șterge contul',
+    deleteConfirmMessage: 'Ești sigur? Această acțiune este ireversibilă. Toate datele tale vor fi șterse permanent.',
+    deleteConfirmYes: 'Da, șterge contul',
+    deleteFailed: 'Ștergerea contului a eșuat. Încearcă din nou.',
+    toggleFailed: 'Actualizarea setării a eșuat.',
+  },
+
   // Placeholder captions (dev-only, describes which story builds the real screen)
   placeholderCaptions: {
     issues: 'Placeholder — S06 will build the full issues list.',

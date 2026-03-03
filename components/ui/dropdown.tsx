@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 import { ThemedText } from '@/components/themed-text';
 import {
@@ -59,38 +59,6 @@ export function Dropdown({
     [onValueChange],
   );
 
-  const renderItem = useCallback(
-    ({ item }: { item: DropdownOption }) => {
-      const isSelected = item.value === selectedValue;
-      return (
-        <Pressable
-          style={styles.option}
-          onPress={() => handleSelect(item.value)}
-          accessibilityRole="radio"
-          accessibilityState={{ checked: isSelected }}
-        >
-          <ThemedText
-            type="body"
-            style={[
-              styles.optionText,
-              isSelected && { color: BrandColors.orangeWeb },
-            ]}
-          >
-            {item.label}
-          </ThemedText>
-          {isSelected && (
-            <IconSymbol
-              name="checkmark"
-              size={20}
-              color={BrandColors.orangeWeb}
-            />
-          )}
-        </Pressable>
-      );
-    },
-    [selectedValue, handleSelect],
-  );
-
   return (
     <View style={styles.container}>
       {label ? (
@@ -127,12 +95,37 @@ export function Dropdown({
       </Pressable>
 
       <ThemedBottomSheet ref={sheetRef} snapPoints={['40%']}>
-        <BottomSheetFlatList
-          data={options}
-          keyExtractor={(item: DropdownOption) => item.value}
-          contentContainerStyle={styles.listContent}
-          renderItem={renderItem}
-        />
+        <BottomSheetScrollView contentContainerStyle={styles.listContent}>
+          {options.map((option) => {
+            const isSelected = option.value === selectedValue;
+            return (
+              <Pressable
+                key={option.value}
+                style={styles.option}
+                onPress={() => handleSelect(option.value)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: isSelected }}
+              >
+                <ThemedText
+                  type="body"
+                  style={[
+                    styles.optionText,
+                    isSelected && { color: BrandColors.orangeWeb },
+                  ]}
+                >
+                  {option.label}
+                </ThemedText>
+                {isSelected && (
+                  <IconSymbol
+                    name="checkmark"
+                    size={20}
+                    color={BrandColors.orangeWeb}
+                  />
+                )}
+              </Pressable>
+            );
+          })}
+        </BottomSheetScrollView>
       </ThemedBottomSheet>
     </View>
   );
