@@ -1,11 +1,12 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 import 'react-native-url-polyfill/auto';
 
@@ -18,6 +19,7 @@ import {
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/store/auth-context';
 import { QueryProvider } from '@/store/query-client';
+import { ONBOARDING_KEY } from '@/constants/storage-keys';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,14 +35,40 @@ export default function RootLayout() {
     FiraSans_700Bold,
     FiraSans_800ExtraBold,
   });
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
 
+  // Check onboarding flag on mount
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
+    AsyncStorage.getItem(ONBOARDING_KEY)
+      .then((value) => setShowOnboarding(value !== 'true'))
+      .catch((err) => {
+        console.warn('[layout] Failed to read onboarding flag:', err);
+        // Default to showing onboarding — re-showing is better than
+        // permanently skipping it for a first-time user.
+        setShowOnboarding(true);
+      });
+  }, []);
+
+  // Wait for both fonts and onboarding check, then navigate + hide splash
+  useEffect(() => {
+    if (fontError) {
+      console.warn('[layout] Font loading failed:', fontError);
     }
-  }, [fontsLoaded, fontError]);
+    if ((!fontsLoaded && !fontError) || showOnboarding === null) return;
+
+    if (showOnboarding) {
+      // Defer to next frame so the Stack tree is committed
+      const id = requestAnimationFrame(() => router.replace('/onboarding'));
+      void SplashScreen.hideAsync();
+      return () => cancelAnimationFrame(id);
+    }
+    void SplashScreen.hideAsync();
+  }, [fontsLoaded, fontError, showOnboarding]);
 
   if (!fontsLoaded && !fontError) {
+    return null;
+  }
+  if (showOnboarding === null) {
     return null;
   }
 
@@ -58,6 +86,7 @@ export default function RootLayout() {
               <Stack.Screen name="leaderboard" options={{ headerShown: false }} />
               <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
               <Stack.Screen name="settings" options={{ headerShown: false }} />
+              <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false, animation: 'none' }} />
               <Stack.Screen name="(auth)" options={{ presentation: 'modal', headerShown: false }} />
             </Stack>
             <StatusBar style="auto" />

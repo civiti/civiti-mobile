@@ -30,6 +30,7 @@ const MAPPING = {
   // People
   'person.2.fill': 'people',
   // Actions
+  'magnifyingglass': 'search',
   'line.3.horizontal.decrease.circle': 'filter-list',
   'heart.fill': 'favorite',
   'heart': 'favorite-border',

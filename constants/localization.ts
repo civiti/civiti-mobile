@@ -180,6 +180,18 @@ export const Localization = {
     empty: 'Nicio activitate recentă',
   },
 
+  // Onboarding
+  onboarding: {
+    slide1Title: 'Descoperă problemele din comunitatea ta',
+    slide1Subtitle: 'Explorează problemele raportate în zona ta și rămâi informat.',
+    slide2Title: 'Trimite emailuri autorităților',
+    slide2Subtitle: 'Participă la campanii coordonate de email către instituții.',
+    slide3Title: 'Fă diferența împreună',
+    slide3Subtitle: 'Votează, comentează și urmărește progresul problemelor.',
+    start: 'Începe',
+    skip: 'Sari peste',
+  },
+
   // Email campaign
   email: {
     promptTitle: 'Ai trimis emailul?',
