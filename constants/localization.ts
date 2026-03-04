@@ -177,7 +177,6 @@ export const Localization = {
   // Activity feed
   activity: {
     title: 'Activitate recentă',
-    seeAll: 'Vezi tot',
     empty: 'Nicio activitate recentă',
   },
 
