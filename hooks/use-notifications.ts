@@ -151,6 +151,7 @@ export function useNotifications(): NotificationBadgeValue {
             style: 'cancel',
             onPress: () => {
               promptingRef.current = false;
+              if (cancelled) return;
               void AsyncStorage.setItem(
                 PUSH_PERMISSION_ASKED_KEY,
                 'true',
@@ -162,6 +163,10 @@ export function useNotifications(): NotificationBadgeValue {
           {
             text: Localization.notifications.permissionAllow,
             onPress: async () => {
+              if (cancelled) {
+                promptingRef.current = false;
+                return;
+              }
               try {
                 const granted = await requestNotificationPermission();
                 if (!granted) {
