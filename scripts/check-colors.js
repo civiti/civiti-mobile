@@ -22,7 +22,7 @@ const APPROVED_COLORS = new Set([
   // Status/Urgency dark variants
   '#94A3B8', '#FBBF24', '#FB923C',
   // Button dark danger pressed
-  '#C05050',
+  '#D46060',
   // Dark mode
   '#ECEDEE', '#151718', '#1E2022', '#262A2C', '#3A3F42',
   // Status — Draft/Cancelled
