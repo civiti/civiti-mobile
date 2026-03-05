@@ -80,7 +80,7 @@ export default function MyIssuesScreen() {
   }, [router]);
 
   const handleEndReached = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+    if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const renderItem = useCallback(
@@ -152,6 +152,8 @@ export default function MyIssuesScreen() {
           ListFooterComponent={renderFooter}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
+          maxToRenderPerBatch={10}
+          windowSize={5}
           contentInsetAdjustmentBehavior="automatic"
           refreshControl={
             <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={accent} />

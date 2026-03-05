@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { BrandColors } from '@/constants/theme';
 import { Spacing } from '@/constants/spacing';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -21,11 +20,13 @@ function RadioOptionItem({
   option,
   isSelected,
   borderColor,
+  accent,
   onPress,
 }: {
   option: RadioOption;
   isSelected: boolean;
   borderColor: string;
+  accent: string;
   onPress: (value: string) => void;
 }) {
   const handlePress = useCallback(() => onPress(option.value), [onPress, option.value]);
@@ -38,8 +39,8 @@ function RadioOptionItem({
       accessibilityState={{ checked: isSelected }}
       accessibilityLabel={option.label}
     >
-      <View style={[styles.outerCircle, { borderColor: isSelected ? BrandColors.orangeWeb : borderColor }]}>
-        {isSelected && <View style={styles.innerCircle} />}
+      <View style={[styles.outerCircle, { borderColor: isSelected ? accent : borderColor }]}>
+        {isSelected && <View style={[styles.innerCircle, { backgroundColor: accent }]} />}
       </View>
       <ThemedText type="body">{option.label}</ThemedText>
     </Pressable>
@@ -48,6 +49,7 @@ function RadioOptionItem({
 
 export function RadioGroup({ options, selectedValue, onValueChange }: RadioGroupProps) {
   const borderColor = useThemeColor({}, 'border');
+  const accent = useThemeColor({}, 'accent');
 
   return (
     <View style={styles.container} accessibilityRole="radiogroup">
@@ -57,6 +59,7 @@ export function RadioGroup({ options, selectedValue, onValueChange }: RadioGroup
           option={option}
           isSelected={option.value === selectedValue}
           borderColor={borderColor}
+          accent={accent}
           onPress={onValueChange}
         />
       ))}
@@ -87,6 +90,5 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: BrandColors.orangeWeb,
   },
 });

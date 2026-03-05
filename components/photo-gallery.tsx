@@ -11,7 +11,6 @@ import {
 
 import { Localization } from '@/constants/localization';
 import { BorderRadius, Spacing } from '@/constants/spacing';
-import { BrandColors } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import type { IssuePhotoResponse } from '@/types/issues';
 
@@ -119,7 +118,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
                 {
                   backgroundColor:
                     index === activeIndex
-                      ? BrandColors.white
+                      ? '#FFFFFF'
                       : 'rgba(255,255,255,0.5)',
                 },
               ]}
@@ -155,5 +154,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: BorderRadius.xs,
+    borderCurve: 'continuous',
   },
 });

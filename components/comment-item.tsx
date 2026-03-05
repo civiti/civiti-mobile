@@ -137,6 +137,7 @@ export function CommentItem({
           ) : isEditing ? (
             <View style={styles.editContainer}>
               <TextInput
+                accessibilityLabel={Localization.comments.placeholder}
                 style={[
                   styles.editInput,
                   {

@@ -1,6 +1,5 @@
 import { StyleSheet, View, type ViewProps } from 'react-native';
 
-import { BrandColors } from '@/constants/theme';
 import { BorderRadius } from '@/constants/spacing';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -11,7 +10,8 @@ type ProgressBarProps = ViewProps & {
 
 export function ProgressBar({ progress, fillColor, style, ...rest }: ProgressBarProps) {
   const trackColor = useThemeColor({}, 'border');
-  const fill = fillColor ?? BrandColors.orangeWeb;
+  const accent = useThemeColor({}, 'accent');
+  const fill = fillColor ?? accent;
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
 
   return (

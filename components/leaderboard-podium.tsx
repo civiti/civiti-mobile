@@ -112,6 +112,6 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
   },
   pedestalRank: {
-    color: BrandColors.white,
+    color: '#FFFFFF',
   },
 });

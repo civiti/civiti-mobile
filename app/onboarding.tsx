@@ -18,7 +18,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Button } from '@/components/ui/button';
 import { Localization } from '@/constants/localization';
 import { BrandColors, Fonts } from '@/constants/theme';
-import { Spacing } from '@/constants/spacing';
+import { BorderRadius, Spacing } from '@/constants/spacing';
 import { ONBOARDING_KEY } from '@/constants/storage-keys';
 
 // ─── Slide data ────────────────────────────────────────────────
@@ -261,7 +261,8 @@ const styles = StyleSheet.create({
   dot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: BorderRadius.xs,
+    borderCurve: 'continuous',
   },
   startButton: {
     width: '100%',

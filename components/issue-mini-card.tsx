@@ -38,6 +38,7 @@ export function IssueMiniCard({ issue, onPress, onClose }: IssueMiniCardProps) {
             style={styles.thumbnail}
             contentFit="cover"
             transition={200}
+            recyclingKey={issue.id}
             accessibilityIgnoresInvertColors
             accessibilityLabel={issue.title ?? 'Issue photo'}
           />

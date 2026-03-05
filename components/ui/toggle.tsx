@@ -1,7 +1,6 @@
 import { StyleSheet, Switch, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { BrandColors } from '@/constants/theme';
 import { Spacing } from '@/constants/spacing';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -13,6 +12,8 @@ type ToggleProps = {
 
 export function Toggle({ value, onValueChange, label }: ToggleProps) {
   const borderColor = useThemeColor({}, 'border');
+  const accent = useThemeColor({}, 'accent');
+  const surface = useThemeColor({}, 'surface');
 
   return (
     <View style={styles.row}>
@@ -20,8 +21,9 @@ export function Toggle({ value, onValueChange, label }: ToggleProps) {
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: borderColor, true: BrandColors.orangeWeb }}
-        thumbColor={BrandColors.white}
+        trackColor={{ false: borderColor, true: accent }}
+        thumbColor={surface}
+        accessibilityRole="switch"
         accessibilityLabel={label}
       />
     </View>

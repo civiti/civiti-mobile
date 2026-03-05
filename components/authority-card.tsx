@@ -5,7 +5,8 @@ import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Localization } from '@/constants/localization';
 import { BorderRadius, Spacing } from '@/constants/spacing';
-import { BrandColors } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import type { IssueAuthorityResponse } from '@/types/issues';
 
@@ -15,10 +16,12 @@ type AuthorityCardProps = {
 };
 
 export function AuthorityCard({ authority, onSendEmail }: AuthorityCardProps) {
+  const scheme = (useColorScheme() ?? 'light') as 'light' | 'dark';
   const surface = useThemeColor({}, 'surfaceElevated');
   const border = useThemeColor({}, 'border');
   const textSecondary = useThemeColor({}, 'textSecondary');
   const accent = useThemeColor({}, 'accent');
+  const primaryText = Colors[scheme].primary;
 
   const handleEmailPress = useCallback(() => {
     onSendEmail(authority);
@@ -70,12 +73,12 @@ export function AuthorityCard({ authority, onSendEmail }: AuthorityCardProps) {
         <IconSymbol
           name="envelope.fill"
           size={16}
-          color={authority.email ? BrandColors.oxfordBlue : textSecondary}
+          color={authority.email ? primaryText : textSecondary}
         />
         <ThemedText
           type="label"
           style={{
-            color: authority.email ? BrandColors.oxfordBlue : textSecondary,
+            color: authority.email ? primaryText : textSecondary,
             textTransform: 'none',
           }}
         >

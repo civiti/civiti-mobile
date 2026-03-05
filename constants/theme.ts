@@ -77,6 +77,46 @@ export const StatusColors: Record<IssueStatus, string> = {
   Cancelled: '#64748B',
 };
 
+type BadgeStyle = { fg: string; bg: string; border: string };
+
+export const StatusBadgeColors: Record<'light' | 'dark', Record<IssueStatus, BadgeStyle>> = {
+  light: {
+    Draft:       { fg: '#64748B', bg: '#F1F5F9', border: '#CBD5E1' },
+    Submitted:   { fg: '#14213D', bg: '#E6F7FF', border: '#91D5FF' },
+    UnderReview: { fg: '#D48806', bg: '#FFFBE6', border: '#FFE58F' },
+    Active:      { fg: '#1890FF', bg: '#E6F7FF', border: '#91D5FF' },
+    Resolved:    { fg: '#28A745', bg: '#DCFCE7', border: '#86EFAC' },
+    Rejected:    { fg: '#DC3545', bg: '#FFF1F0', border: '#FFB8B8' },
+    Cancelled:   { fg: '#64748B', bg: '#F1F5F9', border: '#CBD5E1' },
+  },
+  dark: {
+    Draft:       { fg: '#94A3B8', bg: 'rgba(100,116,139,0.15)', border: 'rgba(100,116,139,0.3)' },
+    Submitted:   { fg: '#60A5FA', bg: '#1A3A47', border: 'rgba(96,165,250,0.3)' },
+    UnderReview: { fg: '#FBBF24', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)' },
+    Active:      { fg: '#60A5FA', bg: '#1A3A47', border: 'rgba(96,165,250,0.3)' },
+    Resolved:    { fg: '#4ADE80', bg: '#14532D', border: 'rgba(74,222,128,0.3)' },
+    Rejected:    { fg: '#F87171', bg: '#450A0A', border: 'rgba(248,113,113,0.3)' },
+    Cancelled:   { fg: '#94A3B8', bg: 'rgba(100,116,139,0.15)', border: 'rgba(100,116,139,0.3)' },
+  },
+};
+
+type UrgencyStyle = { fg: string; bg: string };
+
+export const UrgencyBadgeColors: Record<'light' | 'dark', Record<UrgencyLevel, UrgencyStyle>> = {
+  light: {
+    Low:    { fg: '#28A745', bg: '#DCFCE7' },
+    Medium: { fg: '#F59E0B', bg: '#FEF3C7' },
+    High:   { fg: '#F97316', bg: '#FFEDD5' },
+    Urgent: { fg: '#DC3545', bg: '#FFF1F0' },
+  },
+  dark: {
+    Low:    { fg: '#4ADE80', bg: '#14532D' },
+    Medium: { fg: '#FBBF24', bg: 'rgba(245,158,11,0.15)' },
+    High:   { fg: '#FB923C', bg: 'rgba(249,115,22,0.15)' },
+    Urgent: { fg: '#F87171', bg: '#450A0A' },
+  },
+};
+
 export const CategoryColors: Record<IssueCategory, string> = {
   Infrastructure: '#F59E0B',
   Environment: '#22C55E',

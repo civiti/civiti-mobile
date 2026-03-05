@@ -10,7 +10,7 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { BrandColors, Colors } from '@/constants/theme';
 import { BorderRadius, Spacing } from '@/constants/spacing';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -22,32 +22,22 @@ type ButtonProps = Omit<PressableProps, 'style'> & {
   style?: StyleProp<ViewStyle>;
 };
 
-const VARIANT_COLORS = {
-  primary: {
-    bg: BrandColors.orangeWeb,
-    text: BrandColors.oxfordBlue,
-    pressed: BrandColors.orangeWeb90,
-    border: 'transparent',
+type VariantStyle = { bg: string; text: string; pressed: string; border: string };
+
+const VARIANT_COLORS: Record<'light' | 'dark', Record<ButtonVariant, VariantStyle>> = {
+  light: {
+    primary:   { bg: BrandColors.orangeWeb, text: BrandColors.oxfordBlue, pressed: BrandColors.orangeWeb90, border: 'transparent' },
+    secondary: { bg: BrandColors.white, text: BrandColors.oxfordBlue, pressed: BrandColors.platinum, border: BrandColors.platinum },
+    ghost:     { bg: 'transparent', text: BrandColors.oxfordBlue, pressed: BrandColors.orangeWeb20, border: 'transparent' },
+    danger:    { bg: Colors.light.error, text: BrandColors.white, pressed: 'rgba(220, 53, 69, 0.9)', border: 'transparent' },
   },
-  secondary: {
-    bg: BrandColors.white,
-    text: BrandColors.oxfordBlue,
-    pressed: BrandColors.platinum,
-    border: BrandColors.platinum,
+  dark: {
+    primary:   { bg: BrandColors.orangeWeb, text: BrandColors.oxfordBlue, pressed: BrandColors.orangeWeb90, border: 'transparent' },
+    secondary: { bg: Colors.dark.surfaceElevated, text: Colors.dark.text, pressed: Colors.dark.border, border: Colors.dark.border },
+    ghost:     { bg: 'transparent', text: Colors.dark.text, pressed: BrandColors.orangeWeb20, border: 'transparent' },
+    danger:    { bg: Colors.dark.error, text: BrandColors.white, pressed: 'rgba(248, 113, 113, 0.9)', border: 'transparent' },
   },
-  ghost: {
-    bg: 'transparent',
-    text: BrandColors.oxfordBlue,
-    pressed: BrandColors.orangeWeb20,
-    border: 'transparent',
-  },
-  danger: {
-    bg: Colors.light.error,
-    text: BrandColors.white,
-    pressed: 'rgba(220, 53, 69, 0.9)',
-    border: 'transparent',
-  },
-} as const;
+};
 
 export function Button({
   variant = 'primary',
@@ -58,11 +48,8 @@ export function Button({
   style,
   ...rest
 }: ButtonProps) {
-  const colors = VARIANT_COLORS[variant];
-  const textColor = useThemeColor(
-    { light: colors.text, dark: variant === 'ghost' ? Colors.dark.text : colors.text },
-    'text',
-  );
+  const scheme = (useColorScheme() ?? 'light') as 'light' | 'dark';
+  const colors = VARIANT_COLORS[scheme][variant];
   const isDisabled = disabled || isLoading;
 
   return (
@@ -84,11 +71,11 @@ export function Button({
       {...rest}
     >
       {isLoading ? (
-        <ActivityIndicator color={textColor} size="small" />
+        <ActivityIndicator color={colors.text} size="small" />
       ) : (
         <ThemedText
           type={size === 'small' ? 'label' : 'button'}
-          style={{ color: textColor }}
+          style={{ color: colors.text }}
         >
           {title}
         </ThemedText>

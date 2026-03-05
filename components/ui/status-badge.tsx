@@ -4,23 +4,16 @@ import { ThemedText } from '@/components/themed-text';
 import type { IssueStatus } from '@/constants/enums';
 import { Localization } from '@/constants/localization';
 import { BorderRadius, Spacing } from '@/constants/spacing';
+import { StatusBadgeColors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 type StatusBadgeProps = {
   status: IssueStatus;
 };
 
-const STATUS_STYLES: Record<IssueStatus, { fg: string; bg: string; border: string }> = {
-  Draft:       { fg: '#64748B', bg: '#F1F5F9', border: '#CBD5E1' },
-  Submitted:   { fg: '#14213D', bg: '#E6F7FF', border: '#91D5FF' },
-  UnderReview: { fg: '#D48806', bg: '#FFFBE6', border: '#FFE58F' },
-  Active:      { fg: '#1890FF', bg: '#E6F7FF', border: '#91D5FF' },
-  Resolved:    { fg: '#28A745', bg: '#DCFCE7', border: '#86EFAC' },
-  Rejected:    { fg: '#DC3545', bg: '#FFF1F0', border: '#FFB8B8' },
-  Cancelled:   { fg: '#64748B', bg: '#F1F5F9', border: '#CBD5E1' },
-};
-
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const colors = STATUS_STYLES[status];
+  const scheme = (useColorScheme() ?? 'light') as 'light' | 'dark';
+  const colors = StatusBadgeColors[scheme][status];
 
   return (
     <View

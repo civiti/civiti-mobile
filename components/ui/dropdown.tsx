@@ -8,7 +8,7 @@ import {
   type BottomSheetMethods,
 } from '@/components/ui/bottom-sheet';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { BrandColors, Fonts } from '@/constants/theme';
+import { Fonts } from '@/constants/theme';
 import { BorderRadius, Spacing } from '@/constants/spacing';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -41,6 +41,7 @@ export function Dropdown({
   const backgroundColor = useThemeColor({}, 'surface');
   const borderColor = useThemeColor({}, 'border');
   const disabledBg = useThemeColor({}, 'border');
+  const accent = useThemeColor({}, 'accent');
 
   const selectedLabel = options.find((o) => o.value === selectedValue)?.label;
 
@@ -110,7 +111,7 @@ export function Dropdown({
                   type="body"
                   style={[
                     styles.optionText,
-                    isSelected && { color: BrandColors.orangeWeb },
+                    isSelected && { color: accent },
                   ]}
                 >
                   {option.label}
@@ -119,7 +120,7 @@ export function Dropdown({
                   <IconSymbol
                     name="checkmark"
                     size={20}
-                    color={BrandColors.orangeWeb}
+                    color={accent}
                   />
                 )}
               </Pressable>

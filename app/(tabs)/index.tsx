@@ -215,6 +215,8 @@ export default function IssuesScreen() {
             ListFooterComponent={renderFooter}
             onEndReached={handleEndReached}
             onEndReachedThreshold={0.5}
+            maxToRenderPerBatch={10}
+            windowSize={5}
             refreshControl={
               <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={accent} />
             }

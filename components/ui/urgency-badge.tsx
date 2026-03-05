@@ -4,20 +4,16 @@ import { ThemedText } from '@/components/themed-text';
 import type { UrgencyLevel } from '@/constants/enums';
 import { Localization } from '@/constants/localization';
 import { BorderRadius, Spacing } from '@/constants/spacing';
+import { UrgencyBadgeColors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 type UrgencyBadgeProps = {
   level: UrgencyLevel;
 };
 
-const URGENCY_STYLES: Record<UrgencyLevel, { fg: string; bg: string }> = {
-  Low:    { fg: '#28A745', bg: '#DCFCE7' },
-  Medium: { fg: '#F59E0B', bg: '#FEF3C7' },
-  High:   { fg: '#F97316', bg: '#FFEDD5' },
-  Urgent: { fg: '#DC3545', bg: '#FFF1F0' },
-};
-
 export function UrgencyBadge({ level }: UrgencyBadgeProps) {
-  const colors = URGENCY_STYLES[level] ?? URGENCY_STYLES.Low;
+  const scheme = (useColorScheme() ?? 'light') as 'light' | 'dark';
+  const colors = UrgencyBadgeColors[scheme][level] ?? UrgencyBadgeColors[scheme].Low;
 
   return (
     <View style={[styles.badge, { backgroundColor: colors.bg }]}>

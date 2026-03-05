@@ -33,6 +33,7 @@ function PhotoGridItem({
         contentFit="cover"
         transition={200}
         recyclingKey={url}
+        accessibilityLabel={Localization.detail.photoAlt}
       />
       <Pressable
         onPress={onRemove}
