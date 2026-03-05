@@ -14,7 +14,7 @@ type UrgencyBadgeProps = {
 export function UrgencyBadge({ level }: UrgencyBadgeProps) {
   const scheme = (useColorScheme() ?? 'light') as 'light' | 'dark';
   const colors = UrgencyBadgeColors[scheme][level];
-  if (!colors && __DEV__) console.warn(`[UrgencyBadge] Unknown level "${level}", falling back to Low`);
+  if (!colors) console.warn(`[UrgencyBadge] Unknown level "${level}", falling back to Low`);
   const resolvedColors = colors ?? UrgencyBadgeColors[scheme].Low;
 
   return (

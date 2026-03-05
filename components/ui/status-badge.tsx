@@ -21,7 +21,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
     return (
       <View style={[styles.badge, { backgroundColor: fallback.bg, borderColor: fallback.border }]}>
         <ThemedText type="badge" style={{ color: fallback.fg }}>
-          {String(status)}
+          {Localization.status[status as keyof typeof Localization.status] ?? status}
         </ThemedText>
       </View>
     );
