@@ -24,7 +24,9 @@ const APPROVED_COLORS = new Set([
   // Button dark danger pressed
   '#D46060',
   // Dark mode
-  '#ECEDEE', '#151718', '#1E2022', '#262A2C', '#3A3F42',
+  '#ECEDEE', '#151718', '#1E2022', '#262A2C', '#3A3F42', '#4A5057',
+  // Light pressed
+  '#D6D6D6',
   // Status — Draft/Cancelled
   '#64748B', '#F1F5F9', '#CBD5E1',
   // Status — Submitted

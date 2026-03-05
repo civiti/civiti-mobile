@@ -42,6 +42,7 @@ Visual conventions for Civiti-Mobile. Matches civiti.ro web brand. All values in
 | `surface` | `#FFFFFF` | `#1E2022` |
 | `surfaceElevated` | `#FFFFFF` | `#262A2C` |
 | `border` | `#E5E5E5` | `#3A3F42` |
+| `pressed` | `#D6D6D6` | `#4A5057` |
 | `tint` (active tab) | `#FCA311` | `#FCA311` |
 | `tabIconDefault` | `oxfordBlue50` | `rgba(236,237,238, 0.5)` |
 | `primary` | `#14213D` | `#E5E5E5` |

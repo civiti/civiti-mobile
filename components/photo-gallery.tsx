@@ -38,7 +38,7 @@ function PhotoItem({
   const handlePress = useCallback(() => onPress(item.id), [onPress, item.id]);
 
   return (
-    <Pressable onPress={handlePress} accessibilityRole="button">
+    <Pressable onPress={handlePress} accessibilityRole="button" accessibilityLabel={item.description ?? Localization.detail.photoAlt}>
       <Image
         source={{ uri: item.url }}
         style={[styles.photo, { width }]}

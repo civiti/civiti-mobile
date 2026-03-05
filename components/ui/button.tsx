@@ -33,7 +33,7 @@ const VARIANT_COLORS: Record<'light' | 'dark', Record<ButtonVariant, VariantStyl
   },
   dark: {
     primary:   { bg: BrandColors.orangeWeb, text: BrandColors.oxfordBlue, pressed: BrandColors.orangeWeb90, border: 'transparent' },
-    secondary: { bg: Colors.dark.surfaceElevated, text: Colors.dark.text, pressed: Colors.dark.border, border: Colors.dark.border },
+    secondary: { bg: Colors.dark.surfaceElevated, text: Colors.dark.text, pressed: Colors.dark.pressed, border: Colors.dark.border },
     ghost:     { bg: 'transparent', text: Colors.dark.text, pressed: BrandColors.orangeWeb20, border: 'transparent' },
     danger:    { bg: Colors.dark.error, text: BrandColors.oxfordBlue, pressed: '#D46060', border: 'transparent' },
   },
