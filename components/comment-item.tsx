@@ -345,6 +345,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
     marginTop: Spacing.xs,
     minHeight: 32,
+    minWidth: 44,
   },
   editContainer: {
     gap: Spacing.sm,

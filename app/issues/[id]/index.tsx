@@ -194,6 +194,9 @@ function CommentsSection({
   onEditSave,
   onEditCancel,
   onStartEdit,
+  expandedThreads,
+  onToggleThread,
+  onSortChange,
 }: {
   issueId: string;
   currentUserId: string | undefined;
@@ -204,9 +207,11 @@ function CommentsSection({
   onEditSave: () => void;
   onEditCancel: () => void;
   onStartEdit: (comment: CommentResponse) => void;
+  expandedThreads: Set<string>;
+  onToggleThread: (commentId: string) => void;
+  onSortChange: () => void;
 }) {
   const [sortMode, setSortMode] = useState<SortMode>('newest');
-  const [expandedThreads, setExpandedThreads] = useState<Set<string>>(new Set());
   const textSecondary = useThemeColor({}, 'textSecondary');
   const accent = useThemeColor({}, 'accent');
 
@@ -221,20 +226,8 @@ function CommentsSection({
 
   const toggleSort = useCallback(() => {
     setSortMode((prev) => (prev === 'newest' ? 'mostHelpful' : 'newest'));
-    setExpandedThreads(new Set());
-  }, []);
-
-  const toggleThread = useCallback((commentId: string) => {
-    setExpandedThreads((prev) => {
-      const next = new Set(prev);
-      if (next.has(commentId)) {
-        next.delete(commentId);
-      } else {
-        next.add(commentId);
-      }
-      return next;
-    });
-  }, []);
+    onSortChange();
+  }, [onSortChange]);
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
@@ -302,7 +295,7 @@ function CommentsSection({
                   replyCountOverride={replies.length || comment.replyCount}
                   onToggleReplies={
                     replies.length > 0 || comment.replyCount > 0
-                      ? toggleThread
+                      ? onToggleThread
                       : undefined
                   }
                 />
@@ -379,6 +372,7 @@ function StickyBottomBar({
   emailDisabled,
   replyingTo,
   onClearReply,
+  onReplySuccess,
 }: {
   issueId: string;
   hasVoted: boolean;
@@ -387,6 +381,7 @@ function StickyBottomBar({
   emailDisabled: boolean;
   replyingTo: CommentResponse | null;
   onClearReply: () => void;
+  onReplySuccess: (parentCommentId: string) => void;
 }) {
   const insets = useSafeAreaInsets();
   const surface = useThemeColor({}, 'surface');
@@ -420,6 +415,7 @@ function StickyBottomBar({
         issueId={issueId}
         replyingTo={replyingTo}
         onClearReply={onClearReply}
+        onReplySuccess={onReplySuccess}
       />
     </View>
   );
@@ -463,6 +459,32 @@ export default function IssueDetailScreen() {
   const [replyingTo, setReplyingTo] = useState<CommentResponse | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+  const [expandedThreads, setExpandedThreads] = useState<Set<string>>(new Set());
+
+  const toggleThread = useCallback((commentId: string) => {
+    setExpandedThreads((prev) => {
+      const next = new Set(prev);
+      if (next.has(commentId)) {
+        next.delete(commentId);
+      } else {
+        next.add(commentId);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleSortChange = useCallback(() => {
+    setExpandedThreads(new Set());
+  }, []);
+
+  const handleReplySuccess = useCallback((parentCommentId: string) => {
+    setExpandedThreads((prev) => {
+      if (prev.has(parentCommentId)) return prev;
+      const next = new Set(prev);
+      next.add(parentCommentId);
+      return next;
+    });
+  }, []);
 
   const handleReply = useCallback((comment: CommentResponse) => {
     setEditingCommentId(null);
@@ -709,6 +731,9 @@ export default function IssueDetailScreen() {
           onEditSave={handleEditSave}
           onEditCancel={handleEditCancel}
           onStartEdit={handleStartEdit}
+          expandedThreads={expandedThreads}
+          onToggleThread={toggleThread}
+          onSortChange={handleSortChange}
         />
 
       </ScrollView>
@@ -722,6 +747,7 @@ export default function IssueDetailScreen() {
         emailDisabled={!hasAuthorityWithEmail}
         replyingTo={replyingTo}
         onClearReply={handleClearReply}
+        onReplySuccess={handleReplySuccess}
       />
 
       {/* Email Confirmation Prompt */}
