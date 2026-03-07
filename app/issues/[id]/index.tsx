@@ -301,7 +301,7 @@ function CommentsSection({
                     replyCountOverride={replies.length || comment.replyCount}
                     onToggleReplies={
                       replies.length > 0 || comment.replyCount > 0
-                        ? () => toggleThread(comment.id)
+                        ? toggleThread
                         : undefined
                     }
                   />

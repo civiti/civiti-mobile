@@ -28,7 +28,7 @@ type CommentItemProps = {
   isReply?: boolean;
   repliesExpanded?: boolean;
   replyCountOverride?: number;
-  onToggleReplies?: () => void;
+  onToggleReplies?: (commentId: string) => void;
 };
 
 export function CommentItem({
@@ -95,6 +95,10 @@ export function CommentItem({
       ],
     );
   }, [isDeletePending, deleteCommentFn, comment.id]);
+
+  const handleToggleReplies = useCallback(() => {
+    onToggleReplies?.(comment.id);
+  }, [onToggleReplies, comment.id]);
 
   return (
     <View
@@ -260,7 +264,7 @@ export function CommentItem({
             if (count <= 0 || isReply) return null;
             return (
               <Pressable
-                onPress={onToggleReplies}
+                onPress={handleToggleReplies}
                 style={styles.replyToggle}
                 hitSlop={8}
                 accessibilityRole="button"
