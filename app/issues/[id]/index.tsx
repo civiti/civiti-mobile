@@ -326,9 +326,21 @@ function CommentsSection({
                         ))
                       : hasNextPage
                         ? (
-                          <ThemedText type="caption" style={{ color: textSecondary, marginLeft: Spacing['2xl'] }}>
-                            {Localization.comments.loadMore}
-                          </ThemedText>
+                          <Pressable
+                            onPress={handleLoadMore}
+                            disabled={isFetchingNextPage}
+                            style={{ marginLeft: Spacing['2xl'] }}
+                            hitSlop={8}
+                            accessibilityRole="button"
+                          >
+                            {isFetchingNextPage ? (
+                              <ActivityIndicator size="small" />
+                            ) : (
+                              <ThemedText type="link" style={{ color: accent }}>
+                                {Localization.comments.loadMore}
+                              </ThemedText>
+                            )}
+                          </Pressable>
                         )
                         : null
                     : null}
