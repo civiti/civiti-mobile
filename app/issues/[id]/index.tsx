@@ -206,7 +206,7 @@ function CommentsSection({
   onStartEdit: (comment: CommentResponse) => void;
 }) {
   const [sortMode, setSortMode] = useState<SortMode>('newest');
-  const [expandedThreads, setCollapsedThreads] = useState<Set<string>>(new Set());
+  const [expandedThreads, setExpandedThreads] = useState<Set<string>>(new Set());
   const textSecondary = useThemeColor({}, 'textSecondary');
   const accent = useThemeColor({}, 'accent');
 
@@ -224,7 +224,7 @@ function CommentsSection({
   }, []);
 
   const toggleThread = useCallback((commentId: string) => {
-    setCollapsedThreads((prev) => {
+    setExpandedThreads((prev) => {
       const next = new Set(prev);
       if (next.has(commentId)) {
         next.delete(commentId);
@@ -298,6 +298,7 @@ function CommentsSection({
                     onEditSave={onEditSave}
                     onEditCancel={onEditCancel}
                     repliesExpanded={isExpanded}
+                    replyCountOverride={replies.length}
                     onToggleReplies={
                       replies.length > 0
                         ? () => toggleThread(comment.id)

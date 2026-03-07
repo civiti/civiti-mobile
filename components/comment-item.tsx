@@ -27,6 +27,7 @@ type CommentItemProps = {
   onEditCancel: () => void;
   isReply?: boolean;
   repliesExpanded?: boolean;
+  replyCountOverride?: number;
   onToggleReplies?: () => void;
 };
 
@@ -44,6 +45,7 @@ export function CommentItem({
   onEditCancel,
   isReply = false,
   repliesExpanded,
+  replyCountOverride,
   onToggleReplies,
 }: CommentItemProps) {
   const textSecondary = useThemeColor({}, 'textSecondary');
@@ -253,30 +255,34 @@ export function CommentItem({
           ) : null}
 
           {/* Reply count toggle (top-level comments only) */}
-          {comment.replyCount > 0 && !comment.parentCommentId && onToggleReplies ? (
-            <Pressable
-              onPress={onToggleReplies}
-              style={styles.replyToggle}
-              hitSlop={8}
-              accessibilityRole="button"
-              accessibilityLabel={
-                repliesExpanded
-                  ? Localization.comments.hideReplies
-                  : Localization.comments.showReplies(comment.replyCount)
-              }
-            >
-              <IconSymbol
-                name={repliesExpanded ? 'chevron.up' : 'chevron.down'}
-                size={12}
-                color={accent}
-              />
-              <ThemedText type="caption" style={{ color: accent }}>
-                {repliesExpanded
-                  ? Localization.comments.hideReplies
-                  : Localization.comments.showReplies(comment.replyCount)}
-              </ThemedText>
-            </Pressable>
-          ) : null}
+          {onToggleReplies ? (() => {
+            const count = replyCountOverride ?? comment.replyCount;
+            if (count <= 0 || comment.parentCommentId) return null;
+            return (
+              <Pressable
+                onPress={onToggleReplies}
+                style={styles.replyToggle}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  repliesExpanded
+                    ? Localization.comments.hideReplies
+                    : Localization.comments.showReplies(count)
+                }
+              >
+                <IconSymbol
+                  name={repliesExpanded ? 'chevron.up' : 'chevron.down'}
+                  size={12}
+                  color={accent}
+                />
+                <ThemedText type="caption" style={{ color: accent }}>
+                  {repliesExpanded
+                    ? Localization.comments.hideReplies
+                    : Localization.comments.showReplies(count)}
+                </ThemedText>
+              </Pressable>
+            );
+          })() : null}
         </View>
       </View>
     </View>
