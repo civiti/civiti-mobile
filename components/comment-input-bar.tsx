@@ -14,9 +14,10 @@ type CommentInputBarProps = {
   issueId: string;
   replyingTo: CommentResponse | null;
   onClearReply: () => void;
+  onReplySuccess?: (parentCommentId: string) => void;
 };
 
-export function CommentInputBar({ issueId, replyingTo, onClearReply }: CommentInputBarProps) {
+export function CommentInputBar({ issueId, replyingTo, onClearReply, onReplySuccess }: CommentInputBarProps) {
   const [text, setText] = useState('');
   const accent = useThemeColor({}, 'accent');
   const textSecondary = useThemeColor({}, 'textSecondary');
@@ -42,12 +43,13 @@ export function CommentInputBar({ issueId, replyingTo, onClearReply }: CommentIn
         {
           onSuccess: () => {
             setText('');
+            if (replyingTo?.id) onReplySuccess?.(replyingTo.id);
             onClearReply();
           },
         },
       );
     });
-  }, [text, isPending, requireAuth, createCommentFn, replyingTo?.id, onClearReply]);
+  }, [text, isPending, requireAuth, createCommentFn, replyingTo?.id, onClearReply, onReplySuccess]);
 
   return (
     <View style={styles.container}>

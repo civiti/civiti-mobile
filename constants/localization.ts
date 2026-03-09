@@ -156,6 +156,16 @@ export const Localization = {
     deleted: '[Comentariu șters]',
     reply: 'răspuns',
     replies: 'răspunsuri',
+    showReplies: (count: number) => {
+      const noun =
+        count === 1
+          ? 'răspuns'
+          : count % 100 === 0 || count >= 20
+            ? 'de răspunsuri'
+            : 'răspunsuri';
+      return `Arată ${count} ${noun}`;
+    },
+    hideReplies: 'Ascunde răspunsurile',
     loadMore: 'Încarcă mai multe',
     sortNewest: 'Cele mai noi',
     sortMostHelpful: 'Cele mai utile',
@@ -172,6 +182,8 @@ export const Localization = {
     deleteConfirmYes: 'Da, șterge',
     editSave: 'Salvează',
     editCancel: 'Anulează',
+    repliesUnavailable: 'Răspunsurile nu sunt disponibile momentan',
+    repliesMayLoadWithMore: 'Răspunsurile pot apărea la încărcare suplimentară',
   },
 
   // Activity feed
