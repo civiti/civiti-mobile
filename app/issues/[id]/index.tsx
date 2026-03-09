@@ -234,12 +234,10 @@ function CommentsSection({
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const threaded = useMemo(() => {
-    const topLevel = comments.filter((c) => !c.parentCommentId);
     const commentIds = new Set(comments.map((c) => c.id));
-    const orphans = comments.filter(
-      (c) => c.parentCommentId && !commentIds.has(c.parentCommentId),
+    const items = comments.filter(
+      (c) => !c.parentCommentId || !commentIds.has(c.parentCommentId),
     );
-    const items = [...topLevel, ...orphans];
     const itemIds = new Set(items.map((c) => c.id));
     // Build parent lookup so we can walk grandchildren up to their thread root
     const parentMap = new Map<string, string>();
@@ -305,7 +303,7 @@ function CommentsSection({
                   onEditSave={onEditSave}
                   onEditCancel={onEditCancel}
                   repliesExpanded={isExpanded}
-                  replyCountOverride={replies.length > 0 ? replies.length : comment.replyCount}
+                  replyCountOverride={Math.max(replies.length, comment.replyCount)}
                   onToggleReplies={
                     replies.length > 0 || comment.replyCount > 0
                       ? onToggleThread

@@ -77,7 +77,7 @@ export function IssueMapView({ issues, onIssuePress }: IssueMapViewProps) {
         clusterColor={BrandColors.orangeWeb}
         clusterTextColor={BrandColors.oxfordBlue}
         minPoints={2}
-        radius={50}
+        radius={100}
         animationEnabled
       >
         {mappableIssues.map((issue) => (
