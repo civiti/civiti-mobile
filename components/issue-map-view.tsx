@@ -48,6 +48,9 @@ export function IssueMapView({ issues, onIssuePress }: IssueMapViewProps) {
   );
 
   const handleMapPress = useCallback((e: MapPressEvent) => {
+    // On Android, Marker.onPress bubbles up to MapView.onPress with
+    // action === 'marker-press'. Guard against that so the mini card
+    // isn't immediately dismissed after a marker tap.
     if (e.nativeEvent.action !== 'marker-press') {
       setSelectedIssue(null);
     }
