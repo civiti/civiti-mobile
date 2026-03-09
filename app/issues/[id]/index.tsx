@@ -481,6 +481,7 @@ export default function IssueDetailScreen() {
     setExpandedThreads(new Set());
     setEditingCommentId(null);
     setEditText('');
+    setReplyingTo(null);
   }, []);
 
   const handleReplySuccess = useCallback((parentCommentId: string) => {
