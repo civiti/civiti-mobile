@@ -251,7 +251,10 @@ function CommentsSection({
       if (!c.parentCommentId) continue;
       // Walk up to find the nearest ancestor that is a top-level item
       let rootId = c.parentCommentId;
+      const visited = new Set<string>();
       while (!itemIds.has(rootId) && parentMap.has(rootId)) {
+        if (visited.has(rootId)) break;
+        visited.add(rootId);
         rootId = parentMap.get(rootId)!;
       }
       if (!itemIds.has(rootId)) continue;
@@ -302,7 +305,7 @@ function CommentsSection({
                   onEditSave={onEditSave}
                   onEditCancel={onEditCancel}
                   repliesExpanded={isExpanded}
-                  replyCountOverride={comment.replyCount}
+                  replyCountOverride={replies.length > 0 ? replies.length : comment.replyCount}
                   onToggleReplies={
                     replies.length > 0 || comment.replyCount > 0
                       ? onToggleThread

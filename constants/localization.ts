@@ -156,8 +156,15 @@ export const Localization = {
     deleted: '[Comentariu șters]',
     reply: 'răspuns',
     replies: 'răspunsuri',
-    showReplies: (count: number) =>
-      `Arată ${count} ${count === 1 ? 'răspuns' : 'răspunsuri'}`,
+    showReplies: (count: number) => {
+      const noun =
+        count === 1
+          ? 'răspuns'
+          : count % 100 === 0 || count >= 20
+            ? 'de răspunsuri'
+            : 'răspunsuri';
+      return `Arată ${count} ${noun}`;
+    },
     hideReplies: 'Ascunde răspunsurile',
     loadMore: 'Încarcă mai multe',
     sortNewest: 'Cele mai noi',
