@@ -260,7 +260,8 @@ function CommentsSection({
       list.push(c);
       repliesByParent.set(rootId, list);
     }
-    return { items, repliesByParent };
+    const commentById = new Map(comments.map((c) => [c.id, c]));
+    return { items, repliesByParent, commentById };
   }, [comments]);
 
   return (
@@ -318,7 +319,11 @@ function CommentsSection({
                           comment={reply}
                           issueId={issueId}
                           currentUserId={currentUserId}
-                          parentAuthorName={comment.user.displayName ?? null}
+                          parentAuthorName={
+                            (reply.parentCommentId
+                              ? threaded.commentById.get(reply.parentCommentId)?.user.displayName
+                              : comment.user.displayName) ?? null
+                          }
                           onReply={onReply}
                           onStartEdit={onStartEdit}
                           isEditing={editingCommentId === reply.id}
