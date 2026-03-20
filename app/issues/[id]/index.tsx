@@ -249,7 +249,7 @@ function CommentsSection({
     : { sortBy: 'helpfulCount' as const, sortDescending: true };
 
   const {
-    comments, totalComments, hasNextPage, fetchNextPage,
+    comments, hasNextPage, fetchNextPage,
     isFetchingNextPage, isLoading, isError, error: commentsError, refetch,
   } = useComments(issueId, sortParams);
 
