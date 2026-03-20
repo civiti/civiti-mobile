@@ -9,13 +9,17 @@ import {
   getBlockedUsers,
   unblockUser,
 } from '@/services/blocked-users';
+import { useAuth } from '@/store/auth-context';
 
 const BLOCKED_USERS_KEY = ['user', 'blocked'];
 
 export function useBlockedUsers() {
+  const { session } = useAuth();
+
   const query = useQuery({
     queryKey: BLOCKED_USERS_KEY,
     queryFn: getBlockedUsers,
+    enabled: !!session,
   });
 
   const isBlocked = useCallback(
@@ -60,6 +64,7 @@ export function useUnblockUser() {
     mutationFn: (userId: string) => unblockUser(userId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: BLOCKED_USERS_KEY });
+      Alert.alert(Localization.blockedUsers.unblockSuccess);
     },
     onError: (err) => {
       console.warn('[blocked-users] Failed to unblock user:', err);

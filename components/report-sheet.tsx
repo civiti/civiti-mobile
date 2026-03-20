@@ -27,6 +27,7 @@ export type ReportTarget =
 
 export type ReportSheetRef = {
   open: (target: ReportTarget) => void;
+  close: () => void;
 };
 
 type ReportSheetProps = {
@@ -54,12 +55,14 @@ export const ReportSheet = forwardRef<ReportSheetRef, ReportSheetProps>(
         setDetails('');
         sheetRef.current?.snapToIndex(0);
       },
+      close: () => {
+        sheetRef.current?.close();
+      },
     }));
 
     const handleSubmit = useCallback(() => {
       if (!target || !selectedReason) return;
       onSubmit(target, selectedReason, details.trim() || null);
-      sheetRef.current?.close();
     }, [target, selectedReason, details, onSubmit]);
 
     return (

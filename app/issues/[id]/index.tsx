@@ -291,12 +291,12 @@ function CommentsSection({
       repliesByParent.set(rootId, list);
     }
     const commentById = new Map(visible.map((c) => [c.id, c]));
-    return { items, repliesByParent, commentById };
+    return { items, repliesByParent, commentById, visibleCount: visible.length };
   }, [comments, isBlockedUser]);
 
   return (
-    <SectionBlock title={`${Localization.comments.title} (${totalComments})`}>
-      {totalComments > 0 ? (
+    <SectionBlock title={`${Localization.comments.title} (${threaded.visibleCount})`}>
+      {threaded.visibleCount > 0 ? (
         <Pressable onPress={toggleSort} style={styles.sortToggle} hitSlop={8} accessibilityRole="button">
           <ThemedText type="caption" style={{ color: accent }}>
             {sortMode === 'newest'
@@ -589,10 +589,11 @@ export default function IssueDetailScreen() {
   const handleReportSubmit = useCallback(
     (target: ReportTarget, reason: ReportReason, details: string | null) => {
       const data = { reason, details };
+      const onSuccess = () => reportSheetRef.current?.close();
       if (target.type === 'issue') {
-        reportIssueFn({ issueId: target.id, data });
+        reportIssueFn({ issueId: target.id, data }, { onSuccess });
       } else {
-        reportCommentFn({ commentId: target.id, data });
+        reportCommentFn({ commentId: target.id, data }, { onSuccess });
       }
     },
     [reportIssueFn, reportCommentFn],
