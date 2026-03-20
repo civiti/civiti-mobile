@@ -586,9 +586,11 @@ export default function IssueDetailScreen() {
   }, [requireAuth, id]);
 
   const handleReportComment = useCallback((comment: CommentResponse) => {
-    setReportTargetType('comment');
-    reportSheetRef.current?.open({ type: 'comment', id: comment.id });
-  }, []);
+    requireAuth(() => {
+      setReportTargetType('comment');
+      reportSheetRef.current?.open({ type: 'comment', id: comment.id });
+    });
+  }, [requireAuth]);
 
   const handleReportSubmit = useCallback(
     (target: ReportTarget, reason: ReportReason, details: string | null) => {

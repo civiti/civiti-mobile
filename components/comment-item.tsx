@@ -172,14 +172,27 @@ export function CommentItem({
               {Localization.comments.deleted}
             </ThemedText>
           ) : isHidden ? (
-            <Pressable onPress={() => setHiddenRevealed(true)} hitSlop={4}>
-              <ThemedText type="body" style={{ color: textSecondary, fontStyle: 'italic' }}>
-                {Localization.comments.hidden}
-              </ThemedText>
-              <ThemedText type="caption" style={{ color: accent }}>
-                {Localization.comments.hiddenTapToReveal}
-              </ThemedText>
-            </Pressable>
+            <View style={styles.hiddenRow}>
+              <Pressable onPress={() => setHiddenRevealed(true)} hitSlop={4} style={styles.hiddenContent}>
+                <ThemedText type="body" style={{ color: textSecondary, fontStyle: 'italic' }}>
+                  {Localization.comments.hidden}
+                </ThemedText>
+                <ThemedText type="caption" style={{ color: accent }}>
+                  {Localization.comments.hiddenTapToReveal}
+                </ThemedText>
+              </Pressable>
+              {!isOwn && onReport ? (
+                <Pressable
+                  onPress={handleReport}
+                  style={styles.actionButton}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={Localization.report.title}
+                >
+                  <IconSymbol name="flag.fill" size={16} color={textSecondary} />
+                </Pressable>
+              ) : null}
+            </View>
           ) : isEditing ? (
             <View style={styles.editContainer}>
               <TextInput
@@ -380,6 +393,14 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 14,
     lineHeight: 18,
+  },
+  hiddenRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  hiddenContent: {
+    flex: 1,
   },
   actionRow: {
     flexDirection: 'row',
