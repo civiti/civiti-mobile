@@ -83,8 +83,11 @@ export async function deregisterPushToken(token: string): Promise<void> {
 export async function deregisterAndCleanupPushToken(): Promise<void> {
   const token = await getStoredPushToken();
   if (!token) return;
-  await deregisterPushToken(token);
-  await clearStoredPushToken();
+  try {
+    await deregisterPushToken(token);
+  } finally {
+    await clearStoredPushToken();
+  }
 }
 
 export async function markTokenRegistered(): Promise<void> {
