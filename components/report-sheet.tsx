@@ -79,25 +79,27 @@ export const ReportSheet = forwardRef<ReportSheetRef, ReportSheetProps>(
           <ThemedText type="h3">{Localization.report.title}</ThemedText>
 
           <ThemedText type="bodyBold">{Localization.report.reasonLabel}</ThemedText>
-          {REASONS.map((reason) => (
-            <Pressable
-              key={reason}
-              onPress={() => setSelectedReason(reason)}
-              style={styles.reasonRow}
-              hitSlop={4}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: selectedReason === reason }}
-            >
-              <IconSymbol
-                name={selectedReason === reason ? 'checkmark.circle.fill' : 'circle'}
-                size={20}
-                color={selectedReason === reason ? accent : textSecondary}
-              />
-              <ThemedText type="body">
-                {Localization.report.reasons[reason]}
-              </ThemedText>
-            </Pressable>
-          ))}
+          <View accessibilityRole="radiogroup" accessibilityLabel={Localization.report.reasonLabel}>
+            {REASONS.map((reason) => (
+              <Pressable
+                key={reason}
+                onPress={() => setSelectedReason(reason)}
+                style={styles.reasonRow}
+                hitSlop={4}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: selectedReason === reason }}
+              >
+                <IconSymbol
+                  name={selectedReason === reason ? 'checkmark.circle.fill' : 'circle'}
+                  size={20}
+                  color={selectedReason === reason ? accent : textSecondary}
+                />
+                <ThemedText type="body">
+                  {Localization.report.reasons[reason]}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </View>
 
           <TextInput
             style={[

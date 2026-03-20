@@ -255,6 +255,7 @@ function CommentsSection({
   } = useComments(issueId, sortParams);
 
   const toggleSort = useCallback(() => {
+    setRevealedIds(new Set());
     setSortMode((prev) => (prev === 'newest' ? 'mostHelpful' : 'newest'));
     onSortChange();
   }, [onSortChange]);

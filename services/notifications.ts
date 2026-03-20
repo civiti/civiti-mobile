@@ -63,7 +63,6 @@ export async function registerPushTokenWithBackend(token: string): Promise<void>
   const os = Platform.OS;
   if (os !== 'ios' && os !== 'android') {
     console.warn('[notifications] registerPushTokenWithBackend called on unsupported platform:', os);
-    await clearStoredPushToken();
     return;
   }
   await apiClient<{ success: boolean }>('/user/push-token', {
