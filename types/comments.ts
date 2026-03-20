@@ -14,6 +14,7 @@ export type CommentResponse = {
   helpfulCount: number;
   isEdited: boolean;
   isDeleted: boolean;
+  isHidden: boolean;
   createdAt: string;
   updatedAt: string;
   parentCommentId: string | null;

@@ -15,6 +15,7 @@ import { Localization } from '@/constants/localization';
 import { PUSH_PERMISSION_ASKED_KEY } from '@/constants/storage-keys';
 import {
   clearStoredPushToken,
+  deregisterPushToken,
   getAndStorePushToken,
   getStoredPushToken,
   isTokenRegistered,
@@ -244,13 +245,24 @@ export function useNotifications(): NotificationBadgeValue {
     };
   }, [session]);
 
-  // Sign-out: clear stored token (only on explicit sign-out, not initial mount)
+  // Sign-out: deregister token with backend, then clear local state
   useEffect(() => {
     if (prevSessionRef.current && session === null) {
-      void clearStoredPushToken();
-      void AsyncStorage.removeItem(PUSH_PERMISSION_ASKED_KEY).catch((err: unknown) => {
-        console.warn('[notifications] Failed to clear permission-asked flag on sign-out:', err);
-      });
+      const cleanup = async () => {
+        const token = await getStoredPushToken();
+        if (token) {
+          try {
+            await deregisterPushToken(token);
+          } catch (err) {
+            console.warn('[notifications] Backend deregistration failed:', err);
+          }
+        }
+        await clearStoredPushToken();
+        void AsyncStorage.removeItem(PUSH_PERMISSION_ASKED_KEY).catch((err: unknown) => {
+          console.warn('[notifications] Failed to clear permission-asked flag on sign-out:', err);
+        });
+      };
+      void cleanup();
       promptingRef.current = false;
       setBadgeCount(0);
     }

@@ -154,6 +154,8 @@ export const Localization = {
   comments: {
     title: 'Comentarii',
     deleted: '[Comentariu șters]',
+    hidden: '[Comentariu ascuns]',
+    hiddenTapToReveal: 'Atinge pentru a vedea',
     reply: 'răspuns',
     replies: 'răspunsuri',
     showReplies: (count: number) => {

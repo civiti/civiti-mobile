@@ -61,11 +61,18 @@ export async function getAndStorePushToken(): Promise<string | null> {
 
 export async function registerPushTokenWithBackend(token: string): Promise<void> {
   const platform = Platform.OS === 'ios' ? 'ios' : 'android';
-  await apiClient<{ registered: boolean }>('/user/push-token', {
+  await apiClient<{ success: boolean }>('/user/push-token', {
     method: 'POST',
     body: { token, platform },
   });
   await markTokenRegistered();
+}
+
+export async function deregisterPushToken(token: string): Promise<void> {
+  await apiClient<{ success: boolean }>('/user/push-token/deregister', {
+    method: 'POST',
+    body: { token },
+  });
 }
 
 export async function markTokenRegistered(): Promise<void> {

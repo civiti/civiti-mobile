@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -63,6 +63,8 @@ export function CommentItem({
   const { mutate: deleteCommentFn, isPending: isDeletePending } = useDeleteComment(issueId);
 
   const isOwn = currentUserId != null && comment.user.id === currentUserId;
+  const [hiddenRevealed, setHiddenRevealed] = useState(false);
+  const isHidden = comment.isHidden && !hiddenRevealed && !isOwn;
 
   const handleVote = useCallback(() => {
     if (isVotePending) return;
@@ -169,6 +171,15 @@ export function CommentItem({
             <ThemedText type="body" style={{ color: textSecondary, fontStyle: 'italic' }}>
               {Localization.comments.deleted}
             </ThemedText>
+          ) : isHidden ? (
+            <Pressable onPress={() => setHiddenRevealed(true)} hitSlop={4}>
+              <ThemedText type="body" style={{ color: textSecondary, fontStyle: 'italic' }}>
+                {Localization.comments.hidden}
+              </ThemedText>
+              <ThemedText type="caption" style={{ color: accent }}>
+                {Localization.comments.hiddenTapToReveal}
+              </ThemedText>
+            </Pressable>
           ) : isEditing ? (
             <View style={styles.editContainer}>
               <TextInput
@@ -204,8 +215,8 @@ export function CommentItem({
             <ThemedText type="body">{comment.content ?? ''}</ThemedText>
           )}
 
-          {/* Action row — only for non-deleted, non-editing comments */}
-          {!comment.isDeleted && !isEditing ? (
+          {/* Action row — only for non-deleted, non-hidden, non-editing comments */}
+          {!comment.isDeleted && !isHidden && !isEditing ? (
             <View style={styles.actionRow}>
               {/* Helpful vote */}
               <Pressable
