@@ -510,6 +510,7 @@ export default function IssueDetailScreen() {
   const { isBlocked } = useBlockedUsers();
   const reportSheetRef = useRef<ReportSheetRef>(null);
   const [reportTargetType, setReportTargetType] = useState<'issue' | 'comment' | null>(null);
+  const reportTargetTypeRef = useRef<'issue' | 'comment' | null>(null);
 
   // Reply/edit state
   const [replyingTo, setReplyingTo] = useState<CommentResponse | null>(null);
@@ -591,12 +592,14 @@ export default function IssueDetailScreen() {
   const handleReportIssue = useCallback(() => {
     requireAuth(() => {
       setReportTargetType('issue');
+      reportTargetTypeRef.current = 'issue';
       reportSheetRef.current?.open({ type: 'issue', id });
     });
   }, [requireAuth, id]);
 
   const handleReportComment = useCallback((comment: CommentResponse) => {
     setReportTargetType('comment');
+    reportTargetTypeRef.current = 'comment';
     reportSheetRef.current?.open({ type: 'comment', id: comment.id });
   }, []);
 
@@ -605,9 +608,10 @@ export default function IssueDetailScreen() {
       const data = { reason, details };
       const submittedType = target.type;
       const onSuccess = () => {
-        // Only close if the sheet still shows the same target type
-        if (reportTargetType === submittedType) {
+        if (reportTargetTypeRef.current === submittedType) {
           reportSheetRef.current?.close();
+          reportTargetTypeRef.current = null;
+          setReportTargetType(null);
         }
         Alert.alert(Localization.report.success);
       };
@@ -617,7 +621,7 @@ export default function IssueDetailScreen() {
         reportCommentFn({ commentId: target.id, data }, { onSuccess });
       }
     },
-    [reportIssueFn, reportCommentFn, reportTargetType],
+    [reportIssueFn, reportCommentFn],
   );
 
   const handleBlockUser = useCallback(
@@ -876,7 +880,7 @@ export default function IssueDetailScreen() {
         ref={reportSheetRef}
         onSubmit={handleReportSubmit}
         isSubmitting={reportTargetType === 'issue' ? isReportingIssue : isReportingComment}
-        onClose={() => setReportTargetType(null)}
+        onClose={() => { setReportTargetType(null); reportTargetTypeRef.current = null; }}
       />
     </KeyboardAvoidingView>
   );

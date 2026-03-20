@@ -82,13 +82,8 @@ export async function deregisterPushToken(token: string): Promise<void> {
 /** Call BEFORE signOut() while the auth token is still valid. */
 export async function deregisterAndCleanupPushToken(): Promise<void> {
   const token = await getStoredPushToken();
-  if (token) {
-    try {
-      await deregisterPushToken(token);
-    } catch (err) {
-      console.warn('[notifications] Pre-signout deregistration failed:', err);
-    }
-  }
+  if (!token) return;
+  await deregisterPushToken(token);
   await clearStoredPushToken();
 }
 
