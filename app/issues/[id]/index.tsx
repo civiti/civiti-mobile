@@ -341,9 +341,9 @@ function CommentsSection({
                   onEditSave={onEditSave}
                   onEditCancel={onEditCancel}
                   repliesExpanded={isExpanded}
-                  replyCountOverride={comment.replyCount}
+                  replyCountOverride={replies.length > 0 ? replies.length : comment.replyCount}
                   onToggleReplies={
-                    replies.length > 0 || comment.replyCount > 0
+                    replies.length > 0 || (comment.replyCount > 0 && hasNextPage)
                       ? onToggleThread
                       : undefined
                   }
@@ -377,7 +377,14 @@ function CommentsSection({
                           onReveal={handleReveal}
                         />
                       ))
-                    : (
+                    : comment.replyCount > 0 ? (
+                        <ThemedText
+                          type="caption"
+                          style={{ color: textSecondary, marginLeft: Spacing['2xl'] }}
+                        >
+                          {Localization.comments.repliesHiddenByBlock}
+                        </ThemedText>
+                      ) : (
                         <ThemedText
                           type="caption"
                           style={{ color: textSecondary, marginLeft: Spacing['2xl'] }}

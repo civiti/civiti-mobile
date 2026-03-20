@@ -186,6 +186,7 @@ export const Localization = {
     editCancel: 'Anulează',
     repliesUnavailable: 'Răspunsurile nu sunt disponibile momentan',
     repliesMayLoadWithMore: 'Răspunsurile pot apărea la încărcare suplimentară',
+    repliesHiddenByBlock: 'Răspunsurile sunt ascunse deoarece ai blocat autorii',
   },
 
   // Activity feed
@@ -255,6 +256,7 @@ export const Localization = {
     header: 'Creează un cont',
     displayNameLabel: 'Nume afișat',
     termsLabel: 'Accept termenii și condițiile',
+    termsCheckboxLabel: 'Acceptă termenii',
     submitButton: 'Creează contul',
     hasAccount: 'Ai deja cont?',
     login: 'Conectează-te',
