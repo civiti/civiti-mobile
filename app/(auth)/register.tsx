@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Linking,
   Platform,
@@ -291,7 +292,7 @@ export default function RegisterScreen() {
                   onToggle={() => setTermsAccepted((prev) => !prev)}
                 />
                 <Pressable
-                  onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL).catch(() => {})}
+                  onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL).catch(() => Alert.alert(Localization.errors.generic))}
                   hitSlop={8}
                   accessibilityRole="link"
                 >

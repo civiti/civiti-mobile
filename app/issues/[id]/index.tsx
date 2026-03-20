@@ -277,6 +277,7 @@ function CommentsSection({
     const repliesByParent = new Map<string, CommentResponse[]>();
     for (const c of visible) {
       if (!c.parentCommentId) continue;
+      if (itemIds.has(c.id)) continue; // already promoted to top-level — don't also nest it
       // Walk up to find the nearest ancestor that is a top-level item
       let rootId = c.parentCommentId;
       const visited = new Set<string>();
