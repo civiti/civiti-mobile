@@ -15,7 +15,6 @@ import { Localization } from '@/constants/localization';
 import { PUSH_PERMISSION_ASKED_KEY } from '@/constants/storage-keys';
 import {
   clearStoredPushToken,
-  clearTokenRegisteredFlag,
   getAndStorePushToken,
   getStoredPushToken,
   isTokenRegistered,
@@ -251,7 +250,6 @@ export function useNotifications(): NotificationBadgeValue {
   // before signOut via deregisterAndCleanupPushToken while auth token is valid)
   useEffect(() => {
     if (prevSessionRef.current && session === null) {
-      void clearTokenRegisteredFlag();
       void clearStoredPushToken();
       void AsyncStorage.removeItem(PUSH_PERMISSION_ASKED_KEY).catch((err: unknown) => {
         console.warn('[notifications] Failed to clear permission-asked flag on sign-out:', err);

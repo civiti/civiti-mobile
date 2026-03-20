@@ -89,7 +89,6 @@ export async function deregisterAndCleanupPushToken(): Promise<void> {
       console.warn('[notifications] Pre-signout deregistration failed:', err);
     }
   }
-  await clearTokenRegisteredFlag();
   await clearStoredPushToken();
 }
 

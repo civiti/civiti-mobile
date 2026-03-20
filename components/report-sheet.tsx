@@ -62,9 +62,9 @@ export const ReportSheet = forwardRef<ReportSheetRef, ReportSheetProps>(
     }));
 
     const handleSubmit = useCallback(() => {
-      if (!target || !selectedReason) return;
+      if (!target || !selectedReason || isSubmitting) return;
       onSubmit(target, selectedReason, details.trim() || null);
-    }, [target, selectedReason, details, onSubmit]);
+    }, [target, selectedReason, details, onSubmit, isSubmitting]);
 
     const handleSheetChange = useCallback(
       (index: number) => {
