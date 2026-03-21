@@ -58,14 +58,12 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: () => {
             deregisterAndCleanupPushToken()
-              .catch(() => {})
               .then(() => signOut())
               .then(({ error }) => {
                 if (error) {
                   console.warn('[profile] Logout failed:', error);
-                  Alert.alert(Localization.errors.generic);
-                  return;
                 }
+                // Always reset — Supabase may have already invalidated server-side
                 queryClient.clear();
                 router.replace('/');
               })

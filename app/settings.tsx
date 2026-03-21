@@ -101,7 +101,6 @@ export default function SettingsScreen() {
     mutationFn: deleteUserAccount,
     onSuccess: () => {
       deregisterAndCleanupPushToken()
-        .catch(() => {})
         .then(() => signOut())
         .then(({ error }) => {
           if (error) {
