@@ -295,6 +295,8 @@ export default function RegisterScreen() {
                 <Pressable
                   onPress={() => setTermsAccepted((prev) => !prev)}
                   hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={Localization.register.termsCheckboxLabel}
                 >
                   <ThemedText type="body">
                     {Localization.register.termsAcceptPrefix}

@@ -45,7 +45,6 @@ export function useBlockUser() {
     mutationFn: (userId: string) => blockUser(userId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: BLOCKED_USERS_KEY });
-      Alert.alert(Localization.blockedUsers.blockSuccess);
     },
     onError: (err) => {
       console.warn('[blocked-users] Failed to block user:', err);

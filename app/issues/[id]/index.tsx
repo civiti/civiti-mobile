@@ -645,6 +645,7 @@ export default function IssueDetailScreen() {
             onPress: () => {
               setBlockingId(comment.user.id);
               blockUserFn(comment.user.id, {
+                onSuccess: () => Alert.alert(Localization.blockedUsers.blockSuccess),
                 onSettled: () => setBlockingId(null),
               });
             },
