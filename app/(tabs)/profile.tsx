@@ -68,7 +68,10 @@ export default function ProfileScreen() {
                 queryClient.clear();
                 router.replace('/');
               })
-              .catch((err) => console.warn('[profile] Logout unexpected error:', err));
+              .catch((err) => {
+                console.warn('[profile] Logout unexpected error:', err);
+                Alert.alert(Localization.errors.generic);
+              });
           },
         },
       ],

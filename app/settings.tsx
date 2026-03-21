@@ -337,6 +337,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     minHeight: 44,
     paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
   },
   rowDivider: {
     height: StyleSheet.hairlineWidth,

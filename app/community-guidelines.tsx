@@ -46,7 +46,7 @@ export default function CommunityGuidelinesScreen() {
         <ThemedText type="body">{Localization.communityGuidelines.intro}</ThemedText>
 
         {Localization.communityGuidelines.rules.map((rule, index) => (
-          <View key={index} style={styles.rule}>
+          <View key={rule.title} style={styles.rule}>
             <ThemedText type="bodyBold">
               {index + 1}. {rule.title}
             </ThemedText>

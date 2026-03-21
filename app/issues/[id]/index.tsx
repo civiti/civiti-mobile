@@ -345,7 +345,7 @@ function CommentsSection({
                   repliesExpanded={isExpanded}
                   replyCountOverride={replies.length > 0 ? replies.length : comment.replyCount}
                   onToggleReplies={
-                    replies.length > 0 || (comment.replyCount > 0 && hasNextPage)
+                    replies.length > 0 || comment.replyCount > 0
                       ? onToggleThread
                       : undefined
                   }
