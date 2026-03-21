@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { AchievementCard } from '@/components/achievement-card';
 import { BadgeCard } from '@/components/badge-card';
@@ -25,6 +26,7 @@ const MAX_RECENT_BADGES = 5;
 const MAX_ACTIVE_ACHIEVEMENTS = 3;
 
 export default function ProfileScreen() {
+  const queryClient = useQueryClient();
   const { session, signOut } = useAuth();
   const { data, isLoading, isError, refetch, isRefetching } = useProfile();
   const gamification = data?.gamification ?? null;
@@ -61,8 +63,8 @@ export default function ProfileScreen() {
               .then(({ error }) => {
                 if (error) {
                   console.warn('[profile] Logout failed:', error);
-                  return;
                 }
+                queryClient.clear();
                 router.replace('/');
               })
               .catch((err) => console.warn('[profile] Logout unexpected error:', err));

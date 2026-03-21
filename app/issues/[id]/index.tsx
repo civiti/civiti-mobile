@@ -317,9 +317,11 @@ function CommentsSection({
         <ActivityIndicator style={styles.commentLoader} />
       ) : isError ? (
         <ErrorState message={commentsError?.message} onRetry={refetch} />
-      ) : comments.length === 0 ? (
+      ) : comments.length === 0 || threaded.visibleCount === 0 ? (
         <ThemedText type="caption" style={{ color: textSecondary }}>
-          {Localization.states.emptyComments}
+          {comments.length === 0
+            ? Localization.states.emptyComments
+            : Localization.comments.allHiddenByBlock}
         </ThemedText>
       ) : (
         <>

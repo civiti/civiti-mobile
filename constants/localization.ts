@@ -187,6 +187,7 @@ export const Localization = {
     repliesUnavailable: 'Răspunsurile nu sunt disponibile momentan',
     repliesMayLoadWithMore: 'Răspunsurile pot apărea la încărcare suplimentară',
     repliesHiddenByBlock: 'Răspunsurile sunt ascunse deoarece ai blocat autorii',
+    allHiddenByBlock: 'Comentariile sunt ascunse deoarece ai blocat autorii',
   },
 
   // Activity feed
