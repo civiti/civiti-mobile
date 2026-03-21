@@ -618,8 +618,8 @@ export default function IssueDetailScreen() {
           reportSheetRef.current?.close();
           reportTargetTypeRef.current = null;
           setReportTargetType(null);
+          Alert.alert(Localization.report.success);
         }
-        Alert.alert(Localization.report.success);
       };
       if (target.type === 'issue') {
         reportIssueFn({ issueId: target.id, data }, { onSuccess });

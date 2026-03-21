@@ -1,5 +1,6 @@
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 import { ThemedText } from '@/components/themed-text';
 import {
@@ -106,7 +107,7 @@ export const ReportSheet = forwardRef<ReportSheetRef, ReportSheetProps>(
             ))}
           </View>
 
-          <TextInput
+          <BottomSheetTextInput
             style={[
               styles.detailsInput,
               { color: textColor, borderColor: border, backgroundColor: surface },
