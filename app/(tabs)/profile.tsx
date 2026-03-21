@@ -63,6 +63,8 @@ export default function ProfileScreen() {
               .then(({ error }) => {
                 if (error) {
                   console.warn('[profile] Logout failed:', error);
+                  Alert.alert(Localization.errors.generic);
+                  return;
                 }
                 queryClient.clear();
                 router.replace('/');

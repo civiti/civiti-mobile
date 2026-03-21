@@ -107,6 +107,7 @@ export default function SettingsScreen() {
           if (error) {
             console.warn('[settings] Sign out after delete failed:', error);
           }
+          // Account is already deleted — always clear and navigate
           queryClient.clear();
           router.replace('/');
         })

@@ -297,14 +297,15 @@ export default function RegisterScreen() {
                   hitSlop={8}
                 >
                   <ThemedText type="body">
-                    {Localization.register.termsAcceptPrefix}{' '}
-                    <ThemedText
-                      type="link"
-                      onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL).catch(() => Alert.alert(Localization.errors.generic))}
-                    >
-                      {Localization.register.termsLinkText}
-                    </ThemedText>
+                    {Localization.register.termsAcceptPrefix}
                   </ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL).catch(() => Alert.alert(Localization.errors.generic))}
+                  hitSlop={8}
+                  accessibilityRole="link"
+                >
+                  <ThemedText type="link">{Localization.register.termsLinkText}</ThemedText>
                 </Pressable>
               </View>
 
