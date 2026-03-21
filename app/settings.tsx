@@ -98,15 +98,16 @@ export default function SettingsScreen() {
   }, [handleToggle]);
 
   const { mutate: deleteAccount, isPending: isDeleting } = useMutation({
-    mutationFn: deleteUserAccount,
+    mutationFn: async () => {
+      await deregisterAndCleanupPushToken();
+      return deleteUserAccount();
+    },
     onSuccess: () => {
-      deregisterAndCleanupPushToken()
-        .then(() => signOut())
+      signOut()
         .then(({ error }) => {
           if (error) {
             console.warn('[settings] Sign out after delete failed:', error);
           }
-          // Account is already deleted — always clear and navigate
           queryClient.clear();
           router.replace('/');
         })

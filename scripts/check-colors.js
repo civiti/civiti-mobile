@@ -61,7 +61,7 @@ function getAllFiles(dir, files = []) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       getAllFiles(fullPath, files);
-    } else if (CHECK_EXTENSIONS.includes(path.extname(entry.name)) && !SKIP_FILES.includes(path.relative(root, fullPath))) {
+    } else if (CHECK_EXTENSIONS.includes(path.extname(entry.name)) && !SKIP_FILES.includes(entry.name)) {
       files.push(fullPath);
     }
   }
