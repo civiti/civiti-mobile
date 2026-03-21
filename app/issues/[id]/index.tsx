@@ -255,7 +255,6 @@ function CommentsSection({
   } = useComments(issueId, sortParams);
 
   const toggleSort = useCallback(() => {
-    setRevealedIds(new Set());
     setSortMode((prev) => (prev === 'newest' ? 'mostHelpful' : 'newest'));
     onSortChange();
   }, [onSortChange]);
@@ -510,7 +509,8 @@ export default function IssueDetailScreen() {
   const { mutate: updateCommentFn, isPending: isEditSaving } = useUpdateComment(id);
   const { mutate: reportIssueFn, isPending: isReportingIssue } = useReportIssue();
   const { mutate: reportCommentFn, isPending: isReportingComment } = useReportComment();
-  const { mutate: blockUserFn, isPending: isBlocking } = useBlockUser();
+  const { mutate: blockUserFn } = useBlockUser();
+  const [blockingId, setBlockingId] = useState<string | null>(null);
   const { isBlocked } = useBlockedUsers();
   const reportSheetRef = useRef<ReportSheetRef>(null);
   const [reportTargetType, setReportTargetType] = useState<'issue' | 'comment' | null>(null);
@@ -632,7 +632,7 @@ export default function IssueDetailScreen() {
 
   const handleBlockUser = useCallback(
     (comment: CommentResponse) => {
-      if (isBlocking) return;
+      if (blockingId) return;
       const name = comment.user.displayName ?? '?';
       Alert.alert(
         Localization.blockedUsers.blockConfirmTitle,
@@ -642,12 +642,17 @@ export default function IssueDetailScreen() {
           {
             text: Localization.blockedUsers.blockConfirmYes,
             style: 'destructive',
-            onPress: () => blockUserFn(comment.user.id),
+            onPress: () => {
+              setBlockingId(comment.user.id);
+              blockUserFn(comment.user.id, {
+                onSettled: () => setBlockingId(null),
+              });
+            },
           },
         ],
       );
     },
-    [blockUserFn, isBlocking],
+    [blockUserFn, blockingId],
   );
 
   // Email flow state

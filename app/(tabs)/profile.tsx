@@ -63,9 +63,11 @@ export default function ProfileScreen() {
               .then(({ error }) => {
                 if (error) {
                   console.warn('[profile] Logout failed:', error);
-                  Alert.alert(Localization.errors.generic);
+                  Alert.alert(Localization.errors.generic, undefined, [
+                    { text: 'OK', onPress: () => { queryClient.clear(); router.replace('/'); } },
+                  ]);
+                  return;
                 }
-                // Always reset — Supabase may have already invalidated server-side
                 queryClient.clear();
                 router.replace('/');
               })
