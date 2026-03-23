@@ -153,7 +153,9 @@ export async function performOAuthSignIn(provider: 'google' | 'apple') {
       return { data: null, error: error ?? new Error('No auth URL returned') };
     }
 
-    const result = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URI);
+    const result = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URI, {
+      preferEphemeralSession: true,
+    });
 
     if (result.type !== 'success') {
       // User cancelled or dismissed — not an error
