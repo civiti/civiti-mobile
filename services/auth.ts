@@ -220,7 +220,7 @@ export async function performOAuthSignIn(provider: 'google' | 'apple') {
       return { data: null, error: null };
     }
 
-    console.log('[auth] OAuth redirect URL:', result.url);
+    if (__DEV__) console.log('[auth] OAuth redirect URL:', result.url);
     const params = extractOAuthParams(result.url);
 
     if (params.code) {
