@@ -1,5 +1,6 @@
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/constants/api';
 import { createClient } from '@supabase/supabase-js';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
@@ -97,6 +98,7 @@ export const supabase = createClient(
       storage: storageAdapter,
       autoRefreshToken: true,
       persistSession: true,
+      flowType: 'pkce',
       // OAuth callback tokens are extracted manually via expo-linking (see S11)
       detectSessionInUrl: false,
     },
@@ -136,17 +138,72 @@ function extractOAuthParams(url: string): {
 }
 
 /**
+ * Native Apple Sign-In via expo-apple-authentication.
+ * Returns a Supabase session by passing Apple's ID token to signInWithIdToken.
+ */
+async function performNativeAppleSignIn() {
+  const credential = await AppleAuthentication.signInAsync({
+    requestedScopes: [
+      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      AppleAuthentication.AppleAuthenticationScope.EMAIL,
+    ],
+  });
+
+  if (!credential.identityToken) {
+    return { data: null, error: new Error('No identity token returned from Apple') };
+  }
+
+  const { error, data: { user, session } } = await supabase.auth.signInWithIdToken({
+    provider: 'apple',
+    token: credential.identityToken,
+  });
+
+  if (!error && user && credential.fullName) {
+    const nameParts: string[] = [];
+    if (credential.fullName.givenName) nameParts.push(credential.fullName.givenName);
+    if (credential.fullName.familyName) nameParts.push(credential.fullName.familyName);
+    if (nameParts.length > 0) {
+      await supabase.auth.updateUser({
+        data: {
+          full_name: nameParts.join(' '),
+          given_name: credential.fullName.givenName,
+          family_name: credential.fullName.familyName,
+        },
+      });
+    }
+  }
+
+  return { data: session ?? null, error };
+}
+
+/**
  * Opens a browser-based OAuth flow and exchanges the result for a Supabase session.
  * Uses SFAuthenticationSession (iOS) / Chrome Custom Tabs (Android).
+ * For Apple on iOS, uses the native sign-in dialog instead.
  */
 export async function performOAuthSignIn(provider: 'google' | 'apple') {
+  // Use native Apple Sign-In on iOS
+  if (provider === 'apple' && Platform.OS === 'ios') {
+    try {
+      return await performNativeAppleSignIn();
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === 'ERR_REQUEST_CANCELED') {
+        return { data: null, error: null };
+      }
+      console.warn('[auth] Native Apple sign-in failed:', err);
+      return {
+        data: null,
+        error: err instanceof Error ? err : new Error('Apple sign-in failed'),
+      };
+    }
+  }
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: REDIRECT_URI,
         skipBrowserRedirect: true,
-        queryParams: { flowType: 'pkce' },
       },
     });
 
@@ -163,6 +220,7 @@ export async function performOAuthSignIn(provider: 'google' | 'apple') {
       return { data: null, error: null };
     }
 
+    console.log('[auth] OAuth redirect URL:', result.url);
     const params = extractOAuthParams(result.url);
 
     if (params.code) {
