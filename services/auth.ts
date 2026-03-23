@@ -146,6 +146,7 @@ export async function performOAuthSignIn(provider: 'google' | 'apple') {
       options: {
         redirectTo: REDIRECT_URI,
         skipBrowserRedirect: true,
+        queryParams: { flowType: 'pkce' },
       },
     });
 
@@ -169,8 +170,16 @@ export async function performOAuthSignIn(provider: 'google' | 'apple') {
       return { data: exchange.data?.session ?? null, error: exchange.error };
     }
 
+    if (params.accessToken && params.refreshToken) {
+      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+        access_token: params.accessToken,
+        refresh_token: params.refreshToken,
+      });
+      return { data: sessionData?.session ?? null, error: sessionError };
+    }
+
     if (params.accessToken) {
-      return { data: null, error: new Error('Implicit flow not supported; expected PKCE code') };
+      return { data: null, error: new Error('Implicit flow returned access_token without refresh_token') };
     }
 
     return { data: null, error: new Error('No auth tokens in redirect URL') };
