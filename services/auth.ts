@@ -1,4 +1,4 @@
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/constants/api';
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/constants/api';
 import { createClient } from '@supabase/supabase-js';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
@@ -81,18 +81,18 @@ const storageAdapter = {
 
 // --- Supabase client ---
 
-const isMissingConfig = !SUPABASE_URL || !SUPABASE_ANON_KEY;
+const isMissingConfig = !SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY;
 
 if (isMissingConfig && __DEV__) {
   console.warn(
-    '[auth] SUPABASE_URL or SUPABASE_ANON_KEY is not configured. ' +
+    '[auth] SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY is not configured. ' +
       'Auth will not work. See .env.example.',
   );
 }
 
 export const supabase = createClient(
   SUPABASE_URL || 'https://placeholder.supabase.co',
-  SUPABASE_ANON_KEY || 'placeholder',
+  SUPABASE_PUBLISHABLE_KEY || 'placeholder',
   {
     auth: {
       storage: storageAdapter,

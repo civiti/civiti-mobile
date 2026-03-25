@@ -32,7 +32,7 @@ components/
 constants/
   theme.ts                    # Colors (light/dark), Fonts
   spacing.ts                  # Spacing, BorderRadius, Shadows
-  api.ts                      # API_BASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY
+  api.ts                      # API_BASE_URL, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
   enums.ts                    # IssueStatus, IssueCategory, UrgencyLevel value maps
   localization.ts             # Romanian labels
 
@@ -174,7 +174,7 @@ civitimobile://auth/reset-password → Reset password
 ```
 EXPO_PUBLIC_API_URL=https://civiti-server-production.up.railway.app/api
 EXPO_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=eyJ...
 ```
 
 `.env.local` (gitignored). Defaults in `constants/api.ts`.
