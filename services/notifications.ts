@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { PUSH_TOKEN_KEY, PUSH_TOKEN_REGISTERED_KEY } from '@/constants/storage-keys';
+import { apiClient } from './api-client';
 
 let androidChannelReady = false;
 
@@ -58,16 +59,38 @@ export async function getAndStorePushToken(): Promise<string | null> {
   return token;
 }
 
-// TODO: Replace this stub with: apiClient.post('/user/push-token', { token })
-// then call markTokenRegistered() on success.
 export async function registerPushTokenWithBackend(token: string): Promise<void> {
-  if (__DEV__) {
-    console.log('[notifications] Backend token registration not yet implemented. Token:', token);
+  const os = Platform.OS;
+  if (os !== 'ios' && os !== 'android') {
+    console.warn('[notifications] registerPushTokenWithBackend called on unsupported platform:', os);
+    return;
   }
+  await apiClient<{ success: boolean }>('/user/push-token', {
+    method: 'POST',
+    body: { token, platform: os },
+  });
+  await markTokenRegistered();
+}
 
-  // ── Replace everything above this line with the real API call ──
-  // await apiClient.post('/user/push-token', { token });
-  // await markTokenRegistered();
+export async function deregisterPushToken(token: string): Promise<void> {
+  await apiClient<{ success: boolean }>('/user/push-token/deregister', {
+    method: 'POST',
+    body: { token },
+  });
+}
+
+/** Call BEFORE signOut() while the auth token is still valid. */
+export async function deregisterAndCleanupPushToken(): Promise<void> {
+  const token = await getStoredPushToken();
+  if (!token) return;
+  let deregisterError: unknown;
+  try {
+    await deregisterPushToken(token);
+  } catch (err) {
+    deregisterError = err;
+  }
+  await clearStoredPushToken();
+  if (deregisterError) throw deregisterError;
 }
 
 export async function markTokenRegistered(): Promise<void> {

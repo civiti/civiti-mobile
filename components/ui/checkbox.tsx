@@ -10,9 +10,10 @@ type CheckboxProps = {
   checked: boolean;
   onToggle: () => void;
   label?: string;
+  accessibilityLabel?: string;
 };
 
-export function Checkbox({ checked, onToggle, label }: CheckboxProps) {
+export function Checkbox({ checked, onToggle, label, accessibilityLabel }: CheckboxProps) {
   const borderColor = useThemeColor({}, 'border');
   const accent = useThemeColor({}, 'accent');
 
@@ -23,7 +24,7 @@ export function Checkbox({ checked, onToggle, label }: CheckboxProps) {
       hitSlop={12}
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
     >
       <View
         style={[

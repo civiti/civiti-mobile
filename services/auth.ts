@@ -1,5 +1,6 @@
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/constants/api';
 import { createClient } from '@supabase/supabase-js';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
@@ -97,6 +98,7 @@ export const supabase = createClient(
       storage: storageAdapter,
       autoRefreshToken: true,
       persistSession: true,
+      flowType: 'pkce',
       // OAuth callback tokens are extracted manually via expo-linking (see S11)
       detectSessionInUrl: false,
     },
@@ -136,10 +138,69 @@ function extractOAuthParams(url: string): {
 }
 
 /**
+ * Native Apple Sign-In via expo-apple-authentication.
+ * Returns a Supabase session by passing Apple's ID token to signInWithIdToken.
+ */
+async function performNativeAppleSignIn() {
+  const credential = await AppleAuthentication.signInAsync({
+    requestedScopes: [
+      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      AppleAuthentication.AppleAuthenticationScope.EMAIL,
+    ],
+  });
+
+  if (!credential.identityToken) {
+    return { data: null, error: new Error('No identity token returned from Apple') };
+  }
+
+  const { error, data: { user, session } } = await supabase.auth.signInWithIdToken({
+    provider: 'apple',
+    token: credential.identityToken,
+  });
+
+  if (!error && user && credential.fullName) {
+    const nameParts: string[] = [];
+    if (credential.fullName.givenName) nameParts.push(credential.fullName.givenName);
+    if (credential.fullName.familyName) nameParts.push(credential.fullName.familyName);
+    if (nameParts.length > 0) {
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: {
+          full_name: nameParts.join(' '),
+          given_name: credential.fullName.givenName,
+          family_name: credential.fullName.familyName,
+        },
+      });
+      if (updateError) {
+        console.warn('[auth] Failed to save Apple user name:', updateError.message);
+      }
+    }
+  }
+
+  return { data: session ?? null, error };
+}
+
+/**
  * Opens a browser-based OAuth flow and exchanges the result for a Supabase session.
  * Uses SFAuthenticationSession (iOS) / Chrome Custom Tabs (Android).
+ * For Apple on iOS, uses the native sign-in dialog instead.
  */
 export async function performOAuthSignIn(provider: 'google' | 'apple') {
+  // Use native Apple Sign-In on iOS
+  if (provider === 'apple' && Platform.OS === 'ios') {
+    try {
+      return await performNativeAppleSignIn();
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === 'ERR_REQUEST_CANCELED') {
+        return { data: null, error: null };
+      }
+      console.warn('[auth] Native Apple sign-in failed:', err);
+      return {
+        data: null,
+        error: err instanceof Error ? err : new Error('Apple sign-in failed'),
+      };
+    }
+  }
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
@@ -153,13 +214,16 @@ export async function performOAuthSignIn(provider: 'google' | 'apple') {
       return { data: null, error: error ?? new Error('No auth URL returned') };
     }
 
-    const result = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URI);
+    const result = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URI, {
+      preferEphemeralSession: true,
+    });
 
     if (result.type !== 'success') {
       // User cancelled or dismissed — not an error
       return { data: null, error: null };
     }
 
+    if (__DEV__) console.log('[auth] OAuth redirect URL:', result.url);
     const params = extractOAuthParams(result.url);
 
     if (params.code) {
@@ -167,8 +231,16 @@ export async function performOAuthSignIn(provider: 'google' | 'apple') {
       return { data: exchange.data?.session ?? null, error: exchange.error };
     }
 
+    if (params.accessToken && params.refreshToken) {
+      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+        access_token: params.accessToken,
+        refresh_token: params.refreshToken,
+      });
+      return { data: sessionData?.session ?? null, error: sessionError };
+    }
+
     if (params.accessToken) {
-      return { data: null, error: new Error('Implicit flow not supported; expected PKCE code') };
+      return { data: null, error: new Error('Implicit flow returned access_token without refresh_token') };
     }
 
     return { data: null, error: new Error('No auth tokens in redirect URL') };

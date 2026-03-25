@@ -92,6 +92,8 @@ export default function RootLayout() {
                 <Stack.Screen name="leaderboard" options={{ headerShown: false }} />
                 <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
                 <Stack.Screen name="settings" options={{ headerShown: false }} />
+                <Stack.Screen name="blocked-users" options={{ headerShown: false }} />
+                <Stack.Screen name="community-guidelines" options={{ headerShown: false }} />
                 <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false, animation: 'none' }} />
                 <Stack.Screen name="(auth)" options={{ presentation: 'modal', headerShown: false }} />
               </Stack>

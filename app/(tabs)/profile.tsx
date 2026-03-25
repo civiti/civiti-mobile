@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { AchievementCard } from '@/components/achievement-card';
 import { BadgeCard } from '@/components/badge-card';
@@ -17,6 +18,7 @@ import { BorderRadius, Spacing } from '@/constants/spacing';
 import { BrandColors } from '@/constants/theme';
 import { useProfile } from '@/hooks/use-profile';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { deregisterAndCleanupPushToken } from '@/services/notifications';
 import { useAuth } from '@/store/auth-context';
 
 const AVATAR_SIZE = 80;
@@ -24,6 +26,7 @@ const MAX_RECENT_BADGES = 5;
 const MAX_ACTIVE_ACHIEVEMENTS = 3;
 
 export default function ProfileScreen() {
+  const queryClient = useQueryClient();
   const { session, signOut } = useAuth();
   const { data, isLoading, isError, refetch, isRefetching } = useProfile();
   const gamification = data?.gamification ?? null;
@@ -54,20 +57,28 @@ export default function ProfileScreen() {
           text: Localization.profile.logoutConfirmYes,
           style: 'destructive',
           onPress: () => {
-            signOut()
+            deregisterAndCleanupPushToken()
+              .catch((err) => console.warn('[profile] Push token cleanup failed:', err))
+              .then(() => signOut())
               .then(({ error }) => {
                 if (error) {
                   console.warn('[profile] Logout failed:', error);
+                  Alert.alert(Localization.errors.generic);
                   return;
                 }
+                queryClient.clear();
                 router.replace('/');
               })
-              .catch((err) => console.warn('[profile] Logout unexpected error:', err));
+              .catch((err) => {
+                console.warn('[profile] Logout unexpected error:', err);
+                queryClient.clear();
+                Alert.alert(Localization.errors.generic);
+              });
           },
         },
       ],
     );
-  }, [signOut]);
+  }, [signOut, queryClient]);
 
   const handleEditProfile = useCallback(() => {
     router.push('/edit-profile' as any);

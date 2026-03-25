@@ -74,6 +74,9 @@ const MAPPING = {
   'hand.thumbsup.fill': 'thumb-up',
   // Activity
   'bell.fill': 'notifications',
+  // Reporting & Blocking
+  'flag.fill': 'flag',
+  'nosign': 'block',
   // Misc
   'exclamationmark.triangle.fill': 'warning',
   'arrow.clockwise': 'refresh',

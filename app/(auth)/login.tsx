@@ -86,6 +86,7 @@ export default function LoginScreen() {
     try {
       const { data, error: authError } = await performOAuthSignIn(provider);
       if (authError) {
+        console.warn('[auth] OAuth sign-in error:', authError.message);
         setError(Localization.auth.errors.oauthFailed);
       } else if (data) {
         router.back();

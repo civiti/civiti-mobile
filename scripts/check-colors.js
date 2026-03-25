@@ -51,6 +51,7 @@ const approvedUpper = new Set([...APPROVED_COLORS].map(c => c.toUpperCase()));
 
 // Files/dirs to skip
 const SKIP_DIRS = ['node_modules', '.expo', '.git', 'android', 'ios', 'dist', 'build', 'scripts', 'docs', '.github'];
+const SKIP_FILES = ['app.config.ts', 'app.config.js', 'metro.config.js', 'babel.config.js'];
 const CHECK_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
 
 function getAllFiles(dir, files = []) {
@@ -60,7 +61,7 @@ function getAllFiles(dir, files = []) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       getAllFiles(fullPath, files);
-    } else if (CHECK_EXTENSIONS.includes(path.extname(entry.name))) {
+    } else if (CHECK_EXTENSIONS.includes(path.extname(entry.name)) && !SKIP_FILES.includes(entry.name)) {
       files.push(fullPath);
     }
   }

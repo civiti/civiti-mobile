@@ -154,6 +154,7 @@ export const Localization = {
   comments: {
     title: 'Comentarii',
     deleted: '[Comentariu șters]',
+    hidden: '[Comentariu ascuns]',
     reply: 'răspuns',
     replies: 'răspunsuri',
     showReplies: (count: number) => {
@@ -253,6 +254,9 @@ export const Localization = {
     header: 'Creează un cont',
     displayNameLabel: 'Nume afișat',
     termsLabel: 'Accept termenii și condițiile',
+    termsCheckboxLabel: 'Acceptă termenii',
+    termsAcceptPrefix: 'Accept',
+    termsLinkText: 'termenii și condițiile',
     submitButton: 'Creează contul',
     hasAccount: 'Ai deja cont?',
     login: 'Conectează-te',
@@ -536,6 +540,12 @@ export const Localization = {
     communityNews: 'Știri comunitate',
     monthlyDigest: 'Rezumat lunar',
     achievementsNotif: 'Realizări',
+    accountSection: 'Cont',
+    blockedUsersRow: 'Utilizatori blocați',
+    legalSection: 'Legal',
+    privacyPolicy: 'Politica de confidențialitate',
+    termsOfService: 'Termeni și condiții',
+    communityGuidelines: 'Reguli comunitate',
     dangerSection: 'Zona periculoasă',
     deleteAccount: 'Șterge contul',
     deleteConfirmTitle: 'Șterge contul',
@@ -564,6 +574,72 @@ export const Localization = {
     myIssues: 'Placeholder — S16 will build the real screen.',
     profile: 'Placeholder — S17 will build the real screen.',
     login: 'Placeholder — S11 will build the login UI.',
+  },
+
+  // Report
+  report: {
+    title: 'Raportează',
+    reasonLabel: 'Motiv',
+    detailsPlaceholder: 'Descrie motivul raportării...',
+    submit: 'Trimite raportul',
+    success: 'Raportul a fost trimis',
+    alreadyReported: 'Ai raportat deja acest conținut',
+    reasons: {
+      Spam: 'Spam',
+      Harassment: 'Hărțuire',
+      Inappropriate: 'Conținut inadecvat',
+      Misinformation: 'Dezinformare',
+      Other: 'Altele',
+    },
+  },
+
+  // Blocked users
+  blockedUsers: {
+    title: 'Utilizatori blocați',
+    empty: 'Nu ai blocat niciun utilizator',
+    unblock: 'Deblochează',
+    blockConfirmTitle: 'Blochează utilizatorul',
+    blockConfirmMessage: (name: string) =>
+      `Ești sigur că vrei să blochezi pe ${name}? Nu vei mai vedea comentariile acestui utilizator.`,
+    blockConfirmYes: 'Da, blochează',
+    blockSuccess: 'Utilizatorul a fost blocat',
+    unblockSuccess: 'Utilizatorul a fost deblocat',
+    blockAction: 'Blochează',
+  },
+
+  // Community guidelines
+  communityGuidelines: {
+    title: 'Reguli comunitate',
+    intro:
+      'Civiti este o platformă comunitară pentru raportarea și rezolvarea problemelor locale. Respectarea acestor reguli asigură un mediu constructiv pentru toți utilizatorii.',
+    rules: [
+      {
+        title: 'Raportează probleme reale',
+        body: 'Trimite doar probleme verificabile din comunitatea ta. Nu publica informații false sau înșelătoare.',
+      },
+      {
+        title: 'Respectă ceilalți utilizatori',
+        body: 'Comunicarea trebuie să fie civilizată. Hărțuirea, insultele și limbajul ofensator nu sunt tolerate.',
+      },
+      {
+        title: 'Nu publica conținut inadecvat',
+        body: 'Fotografiile și textele trebuie să fie relevante pentru problema raportată. Conținutul explicit, violent sau ofensator va fi eliminat.',
+      },
+      {
+        title: 'Protejează datele personale',
+        body: 'Nu publica informații personale ale altor persoane (adrese, numere de telefon, fotografii fără consimțământ).',
+      },
+      {
+        title: 'Nu face spam',
+        body: 'Evită duplicarea problemelor, comentariile repetitive sau promovarea comercială.',
+      },
+      {
+        title: 'Folosește emailurile responsabil',
+        body: 'Trimite emailuri către autorități doar prin funcționalitatea platformei și nu abuza de această funcție.',
+      },
+    ] as readonly { title: string; body: string }[],
+    footer:
+      'Încălcarea repetată a acestor reguli poate duce la suspendarea sau ștergerea contului. Raportează conținutul care încalcă regulile folosind butonul de raportare.',
   },
 
   // Placeholders

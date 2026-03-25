@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,10 +11,12 @@ import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Toggle } from '@/components/ui/toggle';
+import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '@/constants/api';
 import { Localization } from '@/constants/localization';
 import { BorderRadius, Spacing } from '@/constants/spacing';
 import { useProfile } from '@/hooks/use-profile';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { deregisterAndCleanupPushToken } from '@/services/notifications';
 import { deleteUserAccount, updateUserProfile } from '@/services/user';
 import { useAuth } from '@/store/auth-context';
 
@@ -96,7 +98,12 @@ export default function SettingsScreen() {
   }, [handleToggle]);
 
   const { mutate: deleteAccount, isPending: isDeleting } = useMutation({
-    mutationFn: deleteUserAccount,
+    mutationFn: async () => {
+      await deregisterAndCleanupPushToken().catch((err) =>
+        console.warn('[settings] Push token cleanup failed before delete:', err),
+      );
+      return deleteUserAccount();
+    },
     onSuccess: () => {
       signOut()
         .then(({ error }) => {
@@ -191,6 +198,58 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Account */}
+        <View style={styles.section}>
+          <ThemedText type="h3">{Localization.settings.accountSection}</ThemedText>
+          <View style={[styles.card, { backgroundColor: surfaceColor, borderColor }]}>
+            <Pressable
+              style={styles.linkRow}
+              onPress={() => router.push('/blocked-users')}
+              hitSlop={4}
+              accessibilityRole="button"
+            >
+              <ThemedText type="body">{Localization.settings.blockedUsersRow}</ThemedText>
+              <IconSymbol name="chevron.right" size={20} color={textColor} />
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Legal */}
+        <View style={styles.section}>
+          <ThemedText type="h3">{Localization.settings.legalSection}</ThemedText>
+          <View style={[styles.card, { backgroundColor: surfaceColor, borderColor }]}>
+            <Pressable
+              style={styles.linkRow}
+              onPress={() => Linking.openURL(PRIVACY_POLICY_URL).catch(() => Alert.alert(Localization.errors.generic))}
+              hitSlop={4}
+              accessibilityRole="link"
+            >
+              <ThemedText type="body">{Localization.settings.privacyPolicy}</ThemedText>
+              <IconSymbol name="chevron.right" size={20} color={textColor} />
+            </Pressable>
+            <View style={[styles.rowDivider, { backgroundColor: borderColor }]} />
+            <Pressable
+              style={styles.linkRow}
+              onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL).catch(() => Alert.alert(Localization.errors.generic))}
+              hitSlop={4}
+              accessibilityRole="link"
+            >
+              <ThemedText type="body">{Localization.settings.termsOfService}</ThemedText>
+              <IconSymbol name="chevron.right" size={20} color={textColor} />
+            </Pressable>
+            <View style={[styles.rowDivider, { backgroundColor: borderColor }]} />
+            <Pressable
+              style={styles.linkRow}
+              onPress={() => router.push('/community-guidelines')}
+              hitSlop={4}
+              accessibilityRole="button"
+            >
+              <ThemedText type="body">{Localization.settings.communityGuidelines}</ThemedText>
+              <IconSymbol name="chevron.right" size={20} color={textColor} />
+            </Pressable>
+          </View>
+        </View>
+
         {/* Danger zone */}
         <View style={styles.section}>
           <ThemedText type="h3">{Localization.settings.dangerSection}</ThemedText>
@@ -271,5 +330,16 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
     borderCurve: 'continuous',
     borderWidth: 1,
+  },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 44,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
+  },
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
   },
 });

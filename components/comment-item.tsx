@@ -29,6 +29,8 @@ type CommentItemProps = {
   repliesExpanded?: boolean;
   replyCountOverride?: number;
   onToggleReplies?: (commentId: string) => void;
+  onReport?: (comment: CommentResponse) => void;
+  onBlockUser?: (comment: CommentResponse) => void;
 };
 
 export function CommentItem({
@@ -47,6 +49,8 @@ export function CommentItem({
   repliesExpanded,
   replyCountOverride,
   onToggleReplies,
+  onReport,
+  onBlockUser,
 }: CommentItemProps) {
   const textSecondary = useThemeColor({}, 'textSecondary');
   const border = useThemeColor({}, 'border');
@@ -59,6 +63,7 @@ export function CommentItem({
   const { mutate: deleteCommentFn, isPending: isDeletePending } = useDeleteComment(issueId);
 
   const isOwn = currentUserId != null && comment.user.id === currentUserId;
+  const isHidden = comment.isHidden && !isOwn;
 
   const handleVote = useCallback(() => {
     if (isVotePending) return;
@@ -95,6 +100,18 @@ export function CommentItem({
       ],
     );
   }, [isDeletePending, deleteCommentFn, comment.id]);
+
+  const handleReport = useCallback(() => {
+    requireAuth(() => {
+      onReport?.(comment);
+    });
+  }, [requireAuth, onReport, comment]);
+
+  const handleBlockUser = useCallback(() => {
+    requireAuth(() => {
+      onBlockUser?.(comment);
+    });
+  }, [requireAuth, onBlockUser, comment]);
 
   const handleToggleReplies = useCallback(() => {
     onToggleReplies?.(comment.id);
@@ -153,6 +170,34 @@ export function CommentItem({
             <ThemedText type="body" style={{ color: textSecondary, fontStyle: 'italic' }}>
               {Localization.comments.deleted}
             </ThemedText>
+          ) : isHidden ? (
+            <View style={styles.hiddenRow}>
+              <ThemedText type="body" style={[styles.hiddenContent, { color: textSecondary, fontStyle: 'italic' }]}>
+                {Localization.comments.hidden}
+              </ThemedText>
+              {!isOwn && onReport ? (
+                <Pressable
+                  onPress={handleReport}
+                  style={styles.actionButton}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={Localization.report.title}
+                >
+                  <IconSymbol name="flag.fill" size={16} color={textSecondary} />
+                </Pressable>
+              ) : null}
+              {!isOwn && onBlockUser ? (
+                <Pressable
+                  onPress={handleBlockUser}
+                  style={styles.actionButton}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={Localization.blockedUsers.blockAction}
+                >
+                  <IconSymbol name="nosign" size={16} color={textSecondary} />
+                </Pressable>
+              ) : null}
+            </View>
           ) : isEditing ? (
             <View style={styles.editContainer}>
               <TextInput
@@ -188,8 +233,8 @@ export function CommentItem({
             <ThemedText type="body">{comment.content ?? ''}</ThemedText>
           )}
 
-          {/* Action row — only for non-deleted, non-editing comments */}
-          {!comment.isDeleted && !isEditing ? (
+          {/* Action row — only for non-deleted, non-hidden, non-editing comments */}
+          {!comment.isDeleted && !isHidden && !isEditing ? (
             <View style={styles.actionRow}>
               {/* Helpful vote */}
               <Pressable
@@ -253,6 +298,32 @@ export function CommentItem({
                   accessibilityLabel={Localization.actions.delete}
                 >
                   <IconSymbol name="trash" size={16} color={textSecondary} />
+                </Pressable>
+              ) : null}
+
+              {/* Report (not own) */}
+              {!isOwn && onReport ? (
+                <Pressable
+                  onPress={handleReport}
+                  style={styles.actionButton}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={Localization.report.title}
+                >
+                  <IconSymbol name="flag.fill" size={16} color={textSecondary} />
+                </Pressable>
+              ) : null}
+
+              {/* Block user (not own) */}
+              {!isOwn && onBlockUser ? (
+                <Pressable
+                  onPress={handleBlockUser}
+                  style={styles.actionButton}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={Localization.blockedUsers.blockAction}
+                >
+                  <IconSymbol name="nosign" size={16} color={textSecondary} />
                 </Pressable>
               ) : null}
             </View>
@@ -327,6 +398,14 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 14,
     lineHeight: 18,
+  },
+  hiddenRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  hiddenContent: {
+    flex: 1,
   },
   actionRow: {
     flexDirection: 'row',

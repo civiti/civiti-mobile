@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -20,6 +22,7 @@ import {
 } from '@/components/ui/bottom-sheet';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TextInput } from '@/components/ui/text-input';
+import { TERMS_OF_SERVICE_URL } from '@/constants/api';
 import { EMAIL_REGEX, MIN_PASSWORD_LENGTH } from '@/constants/validation';
 import { Localization } from '@/constants/localization';
 import { BorderRadius, Spacing } from '@/constants/spacing';
@@ -283,11 +286,30 @@ export default function RegisterScreen() {
                 editable={!anyLoading}
               />
 
-              <Checkbox
-                checked={termsAccepted}
-                onToggle={() => setTermsAccepted((prev) => !prev)}
-                label={Localization.register.termsLabel}
-              />
+              <View style={styles.termsRow}>
+                <Checkbox
+                  checked={termsAccepted}
+                  onToggle={() => setTermsAccepted((prev) => !prev)}
+                  accessibilityLabel={Localization.register.termsCheckboxLabel}
+                />
+                <Pressable
+                  onPress={() => setTermsAccepted((prev) => !prev)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={Localization.register.termsCheckboxLabel}
+                >
+                  <ThemedText type="body">
+                    {Localization.register.termsAcceptPrefix}
+                  </ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL).catch(() => Alert.alert(Localization.errors.generic))}
+                  hitSlop={8}
+                  accessibilityRole="link"
+                >
+                  <ThemedText type="link">{Localization.register.termsLinkText}</ThemedText>
+                </Pressable>
+              </View>
 
               {error && (
                 <View
@@ -330,7 +352,7 @@ export default function RegisterScreen() {
       </ScrollView>
 
       {/* Terms confirmation bottom sheet (shown after OAuth success) */}
-      <ThemedBottomSheet ref={termsSheetRef} snapPoints={['35%']}>
+      <ThemedBottomSheet ref={termsSheetRef} snapPoints={['35%']} enablePanDownToClose={false} backdropPressBehavior="none">
         <View style={styles.termsSheet}>
           <ThemedText type="h3">{Localization.register.termsPromptTitle}</ThemedText>
           <ThemedText type="body">{Localization.register.termsPromptBody}</ThemedText>
@@ -406,5 +428,11 @@ const styles = StyleSheet.create({
   },
   termsActions: {
     gap: Spacing.md,
+  },
+  termsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: Spacing.xs,
   },
 });

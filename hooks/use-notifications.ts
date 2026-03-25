@@ -133,9 +133,11 @@ export function useNotifications(): NotificationBadgeValue {
       if (cancelled) return;
       if (existing) {
         if (!(await isTokenRegistered())) {
-          void registerPushTokenWithBackend(existing).catch((err: unknown) => {
+          try {
+            await registerPushTokenWithBackend(existing);
+          } catch (err) {
             console.warn('[notifications] Backend registration retry failed:', err);
-          });
+          }
         }
         return;
       }
@@ -244,7 +246,8 @@ export function useNotifications(): NotificationBadgeValue {
     };
   }, [session]);
 
-  // Sign-out: clear stored token (only on explicit sign-out, not initial mount)
+  // Sign-out: clear local notification state (backend deregistration happens
+  // before signOut via deregisterAndCleanupPushToken while auth token is valid)
   useEffect(() => {
     if (prevSessionRef.current && session === null) {
       void clearStoredPushToken();
