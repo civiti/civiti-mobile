@@ -39,7 +39,7 @@ import { useComments, useUpdateComment } from '@/hooks/use-comments';
 import { useEmailTracking } from '@/hooks/use-email-tracking';
 import { useIssueDetail } from '@/hooks/use-issue-detail';
 import { useProfile } from '@/hooks/use-profile';
-import { useReportComment, useReportIssue } from '@/hooks/use-report';
+import { showReportError, useReportComment, useReportIssue } from '@/hooks/use-report';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useAuth } from '@/store/auth-context';
 import type { CommentResponse } from '@/types/comments';
@@ -603,10 +603,11 @@ export default function IssueDetailScreen() {
         }
         Alert.alert(Localization.report.success);
       };
-      const onError = () => {
+      const onError = (err: Error) => {
         reportSheetRef.current?.close();
         reportTargetTypeRef.current = null;
         setReportTargetType(null);
+        showReportError(err);
       };
       if (target.type === 'issue') {
         reportIssueFn({ issueId: target.id, data }, { onSuccess, onError });

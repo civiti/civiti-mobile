@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 import 'react-native-url-polyfill/auto';
@@ -80,7 +79,6 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
-      <BottomSheetModalProvider>
       <QueryProvider>
         <AuthProvider>
           <AppShell>
@@ -104,7 +102,6 @@ export default function RootLayout() {
           </AppShell>
         </AuthProvider>
       </QueryProvider>
-    </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }
