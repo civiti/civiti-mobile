@@ -212,6 +212,7 @@ export const Localization = {
     promptNo: 'Nu',
     sentSuccess: 'Email confirmat! +10 puncte',
     openFailed: 'Nu s-a putut deschide aplicația de email',
+    chooseApp: 'Alege aplicația de email',
   },
 
   // Authority

@@ -72,6 +72,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     ['expo-notifications', { color: '#FCA311', sounds: [] }],
+    'react-native-email-link',
   ],
   experiments: {
     typedRoutes: true,

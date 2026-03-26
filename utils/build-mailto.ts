@@ -1,12 +1,19 @@
 import { Localization } from '@/constants/localization';
 import type { IssueAuthorityResponse, IssueDetailResponse } from '@/types/issues';
+
 type BuildMailtoParams = {
   authority: IssueAuthorityResponse;
   issue: IssueDetailResponse;
   userName: string | null;
 };
 
-export function buildMailto({ authority, issue, userName }: BuildMailtoParams): string {
+export type EmailParts = {
+  to: string;
+  subject: string;
+  body: string;
+};
+
+export function buildEmailParts({ authority, issue, userName }: BuildMailtoParams): EmailParts {
   const to = authority.email ?? '';
   const district = issue.district ?? 'București';
 
@@ -61,5 +68,11 @@ export function buildMailto({ authority, issue, userName }: BuildMailtoParams): 
 
   const body = lines.join('\n');
 
+  return { to, subject, body };
+}
+
+/** @deprecated Use buildEmailParts + openComposer instead */
+export function buildMailto(params: BuildMailtoParams): string {
+  const { to, subject, body } = buildEmailParts(params);
   return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
