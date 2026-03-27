@@ -1,4 +1,4 @@
-import type { ExpoConfig, ConfigContext } from 'expo/config';
+import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -11,7 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: 'com.sorvas.civiti',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
