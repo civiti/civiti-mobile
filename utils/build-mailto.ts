@@ -1,10 +1,9 @@
-import { Localization } from '@/constants/localization';
 import type { IssueAuthorityResponse, IssueDetailResponse } from '@/types/issues';
+import { formatDateRomanian } from '@/utils/format-date-romanian';
 
 type BuildMailtoParams = {
   authority: IssueAuthorityResponse;
   issue: IssueDetailResponse;
-  userName: string | null;
 };
 
 export type EmailParts = {
@@ -13,66 +12,60 @@ export type EmailParts = {
   body: string;
 };
 
-export function buildEmailParts({ authority, issue, userName }: BuildMailtoParams): EmailParts {
+/**
+ * Build a legally-compliant petition email per Romanian OG 27/2002.
+ * Contains placeholder brackets the user must fill in their email client.
+ */
+export function buildEmailParts({ authority, issue }: BuildMailtoParams): EmailParts {
   const to = authority.email ?? '';
-  const district = issue.district ?? 'București';
 
-  const subject = `[URGENT] Sesizare cetățenească - ${issue.title ?? ''} - ${district}, București`;
+  const subject = `Petiție - [NUMELE TĂU COMPLET] - ${issue.title ?? ''}`;
 
-  const categoryLabel =
-    Localization.category[issue.category as keyof typeof Localization.category] ?? issue.category;
-  const urgencyLabel =
-    Localization.urgency[issue.urgency as keyof typeof Localization.urgency] ?? issue.urgency;
+  const locationParts = [issue.address];
+  if (issue.district) locationParts.push(issue.district);
+  const locationString = locationParts.filter(Boolean).join(', ') || 'Locație nespecificată';
 
-  const lines: string[] = [
-    `Stimată ${authority.name ?? 'autoritate'},`,
-    '',
-    'Vă scriu pentru a vă aduce la cunoștință o problemă comunitară care necesită atenția dumneavoastră.',
-    '',
-    'Detalii problemă:',
-    `- Titlu: ${issue.title ?? ''}`,
-    `- Locație: ${issue.address ?? ''}`,
-    `- Categorie: ${categoryLabel}`,
-    `- Urgență: ${urgencyLabel}`,
-    '',
-    'Descriere:',
-    issue.description ?? '',
-  ];
+  const createdDate = formatDateRomanian(issue.createdAt);
+  const currentDate = formatDateRomanian(new Date().toISOString());
 
-  if (issue.desiredOutcome) {
-    lines.push('', 'Rezultat dorit:', issue.desiredOutcome);
-  }
+  const communityImpactSection = issue.communityImpact?.trim()
+    ? `\n${issue.communityImpact.trim()}`
+    : '';
 
-  if (issue.communityImpact) {
-    lines.push('', 'Impact asupra comunității:', issue.communityImpact);
-  }
+  const desiredOutcomeText = issue.desiredOutcome?.trim()
+    ? issue.desiredOutcome.trim()
+    : 'Vă solicit să luați măsurile necesare pentru remedierea acestei probleme în cel mai scurt timp posibil.';
 
-  const parsedDate = new Date(issue.createdAt);
-  const createdDate = Number.isNaN(parsedDate.getTime())
-    ? issue.createdAt
-    : parsedDate.toLocaleDateString('ro-RO');
+  const photoCount = issue.photos?.length ?? 0;
+  const photosSection =
+    photoCount > 0
+      ? `La prezenta petiție anexez ${photoCount} ${photoCount === 1 ? 'fotografie care documentează' : 'fotografii care documentează'} problema semnalată.\n`
+      : '';
 
-  lines.push(
-    '',
-    `Această problemă a fost raportată pe ${createdDate}${issue.emailsSent > 0 ? ` și a fost deja semnalată de ${issue.emailsSent} cetățeni` : ''}.`,
-    '',
-    'Vă rog să interveniți pentru rezolvarea acestei situații.',
-    '',
-    'Cu stimă,',
-    userName ?? 'Un cetățean',
-    '',
-    '---',
-    `Referință: ${issue.id}`,
-    'Trimis prin platforma Civiti',
-  );
+  const authorityName = authority.name ?? 'Autoritate';
 
-  const body = lines.join('\n');
+  const body = `Către: ${authorityName}
+
+Subsemnatul/a [NUMELE TĂU COMPLET], CNP: [CNP-UL TĂU], domiciliat(ă) în [ADRESA TA DE DOMICILIU], email: [ADRESA TA DE EMAIL], telefon: [NUMĂRUL TĂU DE TELEFON], vă adresez prezenta petiție prin care solicit să luați măsuri în legătură cu următoarea problemă:
+
+${issue.title ?? ''}
+
+Locație: ${locationString}
+Data sesizării: ${createdDate}
+
+${issue.description ?? ''}${communityImpactSection}
+
+${desiredOutcomeText}
+
+${photosSection}Link către documentația completă: https://civiti.ro/issues/${issue.id}
+
+Conform O.G. 27/2002 privind reglementarea activității de soluționare a petițiilor, vă rog să îmi comunicați răspunsul la adresa de domiciliu menționată mai sus sau prin email la [ADRESA TA DE EMAIL], în termenul legal de 30 de zile.
+
+De asemenea, vă rog să îmi comunicați numărul de înregistrare al acestei petiții pe adresa de email menționată mai sus, pentru a putea urmări soluționarea acesteia.
+
+Cu stimă,
+[NUMELE TĂU COMPLET]
+${currentDate}`;
 
   return { to, subject, body };
-}
-
-/** @deprecated Use buildEmailParts + openComposer instead */
-export function buildMailto(params: BuildMailtoParams): string {
-  const { to, subject, body } = buildEmailParts(params);
-  return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

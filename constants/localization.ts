@@ -213,6 +213,19 @@ export const Localization = {
     sentSuccess: 'Email confirmat! +10 puncte',
     openFailed: 'Nu s-a putut deschide aplicația de email',
     chooseApp: 'Alege aplicația de email',
+    instructionsTitle: 'Instrucțiuni importante',
+    instructionsBody:
+      'Emailul conține câmpuri marcate cu [ ] pe care trebuie să le completezi cu datele tale personale înainte de trimitere.',
+    instructionsPlaceholders: [
+      '[NUMELE TĂU COMPLET] → numele tău legal complet',
+      '[CNP-UL TĂU] → codul numeric personal',
+      '[ADRESA TA DE DOMICILIU] → adresa completă',
+      '[ADRESA TA DE EMAIL] → emailul tău',
+      '[NUMĂRUL TĂU DE TELEFON] → telefonul tău',
+    ] as readonly string[],
+    instructionsNote:
+      'Conform OG 27/2002, petiția trebuie să conțină datele tale de identificare pentru a fi luată în considerare.',
+    instructionsContinue: 'Am înțeles, deschide emailul',
   },
 
   // Authority

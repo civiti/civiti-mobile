@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthorityCard } from '@/components/authority-card';
 import { CommentInputBar } from '@/components/comment-input-bar';
 import { CommentItem } from '@/components/comment-item';
+import { EmailInstructionsSheet, type EmailInstructionsSheetRef } from '@/components/email-instructions-sheet';
 import { EmailPrompt } from '@/components/email-prompt';
 import { ErrorState } from '@/components/error-state';
 import { LocationPreview } from '@/components/location-preview';
@@ -37,7 +38,6 @@ import { useBlockUser } from '@/hooks/use-blocked-users';
 import { useComments, useUpdateComment } from '@/hooks/use-comments';
 import { useEmailTracking } from '@/hooks/use-email-tracking';
 import { useIssueDetail } from '@/hooks/use-issue-detail';
-import { useProfile } from '@/hooks/use-profile';
 import { showReportError, useReportComment, useReportIssue } from '@/hooks/use-report';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useAuth } from '@/store/auth-context';
@@ -487,7 +487,6 @@ export default function IssueDetailScreen() {
 
   const { requireAuth, user } = useAuth();
   const { data: issue, isLoading, isError, error, refetch } = useIssueDetail(id);
-  const { data: profile } = useProfile();
   const { mutate: trackEmailSent } = useEmailTracking(id);
   const { mutate: updateCommentFn, isPending: isEditSaving } = useUpdateComment(id);
   const { mutate: reportIssueFn, isPending: isReportingIssue } = useReportIssue();
@@ -646,6 +645,7 @@ export default function IssueDetailScreen() {
 
   // Email flow state
   const emailPromptRef = useRef<BottomSheetMethods>(null);
+  const emailInstructionsRef = useRef<EmailInstructionsSheetRef>(null);
   const emailFlowActiveRef = useRef(false);
 
   // Detect return from email client via AppState
@@ -704,25 +704,26 @@ export default function IssueDetailScreen() {
         const { to, subject, body } = buildEmailParts({
           authority,
           issue,
-          userName: profile?.displayName ?? null,
         });
-        openComposer({
-          to,
-          subject,
-          body,
-          title: Localization.email.chooseApp,
-          cancelLabel: Localization.actions.cancel,
-        })
-          .then(() => {
-            emailFlowActiveRef.current = true;
+        emailInstructionsRef.current?.open(() => {
+          openComposer({
+            to,
+            subject,
+            body,
+            title: Localization.email.chooseApp,
+            cancelLabel: Localization.actions.cancel,
           })
-          .catch((err) => {
-            console.warn('[email] Failed to open email composer for issue', issue.id, err);
-            Alert.alert(Localization.email.openFailed);
-          });
+            .then(() => {
+              emailFlowActiveRef.current = true;
+            })
+            .catch((err) => {
+              console.warn('[email] Failed to open email composer for issue', issue.id, err);
+              Alert.alert(Localization.email.openFailed);
+            });
+        });
       });
     },
-    [issue, requireAuth, profile?.displayName],
+    [issue, requireAuth],
   );
 
   // Bottom bar CTA: single authority → send directly, multiple → scroll to section
@@ -874,7 +875,10 @@ export default function IssueDetailScreen() {
         onReplySuccess={handleReplySuccess}
       />
 
-      {/* Email Confirmation Prompt */}
+      {/* Email Instructions — shown before opening composer */}
+      <EmailInstructionsSheet ref={emailInstructionsRef} />
+
+      {/* Email Confirmation Prompt — shown after return from email app */}
       <EmailPrompt
         ref={emailPromptRef}
         onConfirm={handleEmailConfirm}
