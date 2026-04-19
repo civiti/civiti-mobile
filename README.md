@@ -1,50 +1,41 @@
-# Welcome to your Expo app 👋
+# Civiti Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicația mobilă nativă a platformei [Civiti](https://civiti.ro) — participare civică pentru România, direct de pe telefon.
 
-## Get started
+[![Download on the App Store](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg)](https://apps.apple.com/ro/app/civiti/id6760908767?l=ro)
 
-1. Install dependencies
+## Ce face
 
-   ```bash
-   npm install
-   ```
+Versiunea mobilă a platformei Civiti, cu aceleași funcționalități de bază ca și aplicația web:
 
-2. Start the app
+- Raportarea problemelor civice cu foto și localizare
+- Vizualizarea problemelor din comunitate
+- Campanii de email către autorități
+- Autentificare cu Google OAuth sau Apple Sign-In
 
-   ```bash
-   npx expo start
-   ```
+## Tech Stack
 
-In the output, you'll find options to open the app in a
+- **Framework**: Expo / React Native
+- **Navigare**: Expo Router (file-based routing)
+- **Auth**: Supabase Auth (Google OAuth + Apple Sign-In)
+- **State Management**: Zustand / React Context
+- **Backend**: [civiti-server](https://github.com/civiti/civiti-server)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Dezvoltare locală
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Necesită un fișier `.env` — vezi `.env.example` pentru variabilele necesare.
 
-## Learn more
+## Deployment
 
-To learn more about developing your project with Expo, look at the following resources:
+- **iOS**: Disponibilă pe [App Store](https://apps.apple.com/ro/app/civiti/id6760908767?l=ro)
+- **Android**: În dezvoltare
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Alte repo-uri
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [civiti-web](https://github.com/civiti/civiti-web) — Frontend (Angular 19)
+- [civiti-server](https://github.com/civiti/civiti-server) — Backend (.NET 8 / C#)
