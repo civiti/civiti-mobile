@@ -84,17 +84,26 @@ function generateDeviceId(): string {
   return `${Date.now().toString(16)}-${segment()}-${segment()}-${segment()}`;
 }
 
-export async function getOrCreateDeviceId(): Promise<string | null> {
-  try {
-    const existing = await AsyncStorage.getItem(DEVICE_ID_KEY);
-    if (existing) return existing;
-    const id = generateDeviceId();
-    await AsyncStorage.setItem(DEVICE_ID_KEY, id);
-    return id;
-  } catch (error) {
-    console.warn('[notifications] Failed to read/persist device id:', error);
-    return null;
-  }
+// Cache the in-flight resolution so overlapping registrations can't each generate a
+// different id for the same installation (which would register one device as two, leaving
+// the orphaned token row this id exists to replace).
+let deviceIdPromise: Promise<string | null> | null = null;
+
+export function getOrCreateDeviceId(): Promise<string | null> {
+  deviceIdPromise ??= (async () => {
+    try {
+      const existing = await AsyncStorage.getItem(DEVICE_ID_KEY);
+      if (existing) return existing;
+      const id = generateDeviceId();
+      await AsyncStorage.setItem(DEVICE_ID_KEY, id);
+      return id;
+    } catch (error) {
+      console.warn('[notifications] Failed to read/persist device id:', error);
+      deviceIdPromise = null; // let a later call retry after a transient failure
+      return null;
+    }
+  })();
+  return deviceIdPromise;
 }
 
 export async function registerPushTokenWithBackend(token: string): Promise<void> {

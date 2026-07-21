@@ -136,12 +136,15 @@ export function useNotifications(): NotificationBadgeValue {
       if (isRunningInExpoGo()) {
         const stale = await getStoredPushToken();
         if (!cancelled && stale) {
+          // Only drop the local copy once the backend has actually deregistered it. A failed
+          // (e.g. offline) deregister must keep the token locally so cleanup can retry on a
+          // later Expo Go launch — otherwise it would be stranded server-side forever.
           try {
             await deregisterPushToken(stale);
+            await clearStoredPushToken();
           } catch (err) {
             console.warn('[notifications] Failed to deregister Expo Go push token:', err);
           }
-          await clearStoredPushToken();
         }
         return;
       }
