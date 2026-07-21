@@ -1,9 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isRunningInExpoGo } from 'expo';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import { PUSH_TOKEN_KEY, PUSH_TOKEN_REGISTERED_KEY } from '@/constants/storage-keys';
+import {
+  DEVICE_ID_KEY,
+  PUSH_TOKEN_KEY,
+  PUSH_TOKEN_REGISTERED_KEY,
+} from '@/constants/storage-keys';
 import { apiClient } from './api-client';
 
 let androidChannelReady = false;
@@ -28,6 +33,15 @@ export async function requestNotificationPermission(): Promise<boolean> {
 }
 
 export async function getAndStorePushToken(): Promise<string | null> {
+  // Never mint a push token inside Expo Go. Expo Go delivers pushes through its own host
+  // app (they appear under the Expo Go icon), so a token registered from here duplicates
+  // every notification alongside the standalone build's token. Remote push is only meant
+  // for development/standalone builds — see https://expo.fyi/dev-client.
+  if (isRunningInExpoGo()) {
+    console.warn('[notifications] Running in Expo Go — skipping push token registration');
+    return null;
+  }
+
   const projectId = Constants.expoConfig?.extra?.eas?.projectId as
     | string
     | undefined;
@@ -59,15 +73,40 @@ export async function getAndStorePushToken(): Promise<string | null> {
   return token;
 }
 
+/**
+ * Non-cryptographic, stable per-installation identifier. Lets the backend replace this
+ * device's previous push token on rotation instead of accumulating orphaned rows. It is
+ * never used as a secret, so `Math.random` entropy is sufficient (mirrors the filename id
+ * scheme in utils/photo-upload.ts). Generated once, then persisted.
+ */
+function generateDeviceId(): string {
+  const segment = () => Math.random().toString(16).slice(2, 10);
+  return `${Date.now().toString(16)}-${segment()}-${segment()}-${segment()}`;
+}
+
+export async function getOrCreateDeviceId(): Promise<string | null> {
+  try {
+    const existing = await AsyncStorage.getItem(DEVICE_ID_KEY);
+    if (existing) return existing;
+    const id = generateDeviceId();
+    await AsyncStorage.setItem(DEVICE_ID_KEY, id);
+    return id;
+  } catch (error) {
+    console.warn('[notifications] Failed to read/persist device id:', error);
+    return null;
+  }
+}
+
 export async function registerPushTokenWithBackend(token: string): Promise<void> {
   const os = Platform.OS;
   if (os !== 'ios' && os !== 'android') {
     console.warn('[notifications] registerPushTokenWithBackend called on unsupported platform:', os);
     return;
   }
+  const deviceId = await getOrCreateDeviceId();
   await apiClient<{ success: boolean }>('/user/push-token', {
     method: 'POST',
-    body: { token, platform: os },
+    body: deviceId ? { token, platform: os, deviceId } : { token, platform: os },
   });
   await markTokenRegistered();
 }

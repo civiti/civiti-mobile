@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isRunningInExpoGo } from 'expo';
 import { router } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import {
@@ -15,6 +16,7 @@ import { Localization } from '@/constants/localization';
 import { PUSH_PERMISSION_ASKED_KEY } from '@/constants/storage-keys';
 import {
   clearStoredPushToken,
+  deregisterPushToken,
   getAndStorePushToken,
   getStoredPushToken,
   isTokenRegistered,
@@ -128,6 +130,22 @@ export function useNotifications(): NotificationBadgeValue {
     let cancelled = false;
 
     const setup = async () => {
+      // A push token minted by a previous Expo Go session must never linger server-side —
+      // it would duplicate every notification (delivered under the Expo Go icon). Remove any
+      // such token, and never register while running in Expo Go.
+      if (isRunningInExpoGo()) {
+        const stale = await getStoredPushToken();
+        if (!cancelled && stale) {
+          try {
+            await deregisterPushToken(stale);
+          } catch (err) {
+            console.warn('[notifications] Failed to deregister Expo Go push token:', err);
+          }
+          await clearStoredPushToken();
+        }
+        return;
+      }
+
       // If token exists locally, just ensure backend registration
       const existing = await getStoredPushToken();
       if (cancelled) return;
