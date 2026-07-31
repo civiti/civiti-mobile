@@ -19,7 +19,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      backgroundColor: '#E6F4FE',
+      // Matches android-icon-background.png. Only shows through where the
+      // background image does not, but leaving it the Expo scaffold blue meant
+      // a stray pale tint behind a navy brand mark.
+      backgroundColor: '#14213D',
       foregroundImage: './assets/images/android-icon-foreground.png',
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
@@ -45,9 +48,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         image: './assets/images/splash-icon.png',
         imageWidth: 200,
         resizeMode: 'contain',
-        backgroundColor: '#ffffff',
+        // Navy in both schemes, because splash-icon.png is the reversed mark:
+        // its cone and handle are pure white, so on the previous #ffffff
+        // background the splash would have shown two floating orange arcs and
+        // nothing else.
+        backgroundColor: '#14213D',
         dark: {
-          backgroundColor: '#000000',
+          backgroundColor: '#14213D',
         },
       },
     ],
